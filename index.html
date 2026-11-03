@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <title>Караван Шёлкового пути</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -268,7 +269,13 @@ const UI={
  star:'<path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 16.9 6.4 20.1l1.4-6.3L3 9.5l6.4-.6z" fill="currentColor"/>'
 };
 const ico=(inner,cls='')=>`<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
-const INNI={camel:UI.camel,hire:UI.sword,weapon:UI.shield,guide:UI.compass,bribe:UI.coin};
+let AD=null;
+const AD_BLOCK='57702', AD_WAIT=120000;
+function initAds(){try{if(window.Adsgram)AD=window.Adsgram.init({blockId:AD_BLOCK})}catch(e){AD=null}}
+const adsReady=()=>!!AD;
+const adReward=()=>Math.min(500,100+S.day*4);
+function showAd(){return new Promise(res=>{if(!AD)return res(false);try{AD.show().then(r=>res(!(r&&r.done===false))).catch(()=>res(false))}catch(e){res(false)}})}
+const INNI={ad:UI.coin,camel:UI.camel,hire:UI.sword,weapon:UI.shield,guide:UI.compass,bribe:UI.coin};
 const TOWNI={bazaar:UI.coin,inn:UI.camel,workshop:UI.box,walls:UI.tower,madrasa:UI.dome};
 function skyline(id){
   const own=isOwn(id), oasis=CITIES[id].oasis&&!own;
@@ -451,6 +458,8 @@ function renderInn(){
     {t:'Проводник',d:'Путь на день короче, бандиты находят реже.',b:S.guide?'Нанят':'Нанять · 250',act:'guide',ok:!S.guide&&S.gold>=250},
     {t:'Подкуп стражи',d:S.wanted?'Снять розыск полностью.':'Вас никто не ищет.',b:`Заплатить · ${S.wanted*80}`,act:'bribe',ok:S.wanted>0&&S.gold>=S.wanted*80}
   ];
+  if(adsReady()){const left=Math.ceil(((S.adAt||0)-Date.now())/60000);
+    items.unshift({t:'Помощь купцов',d:`Посмотрите короткую рекламу и получите ${adReward()} золотых.`,b:left>0?`Через ${left} мин`:`▶ Смотреть · +${adReward()}`,act:'ad',ok:left<=0})}
   let h=`<div class="cards"><div class="power"><span>Сила каравана<small>${S.guards} наёмн. · ${WEAPONS[S.weapon].toLowerCase()}</small></span><b class="num">${power().toFixed(1)}</b></div>`;
   items.forEach(i=>{h+=`<div class="card"><div class="ci">${ico(INNI[i.act])}</div><h3>${i.t}</h3><p>${i.d}</p><div class="act">
     <button class="b main" data-act="${i.act}" ${i.ok?'':'disabled'}>${i.b}</button>
@@ -588,6 +597,9 @@ async function act(a,el){
         const v=await ask('Что будет делать мастерская?','Этот товар в вашем городе будет вдвое дешевле.',opts.concat([{t:'Отмена',v:0}]));
         if(!v)break;S.own.b.workshop=v}else S.own.b[k]=true;
       S.gold-=b.c;S.prices=genPrices(S.city);toast(`Построено: ${b.n}`);break}
+    case 'ad':{busy=true;const ok=await showAd();busy=false;
+      if(ok){const g=adReward();S.gold+=g;S.adAt=Date.now()+AD_WAIT;toast(`Купцы подарили ${g} золотых`)}
+      else toast('Реклама не досмотрена или сейчас недоступна');break}
     case 'reset':{const v=await ask('Начать заново?','Весь прогресс пропадёт.',[{t:'Да, заново',v:1},{t:'Отмена',v:0,cls:'ghost'}]);
       if(v){newGame();tab='market'}break}
     case 'travel':await travel(el.dataset.to);return;
@@ -657,8 +669,9 @@ async function handleEvent(e,danger){
     const B=Math.max(1,Math.round((1.5+S.day*.08)*danger*4*rnd(.6,1.4)));
     const pay=Math.round(Math.max(20,S.gold*.25));
     const v=await ask('Бандиты!',`Из-за барханов выехали разбойники. Их сила: ${B}. Сила вашего каравана: ${power().toFixed(1)}.`,
-      [{t:'Сражаться',v:'fight'},{t:`Откупиться · ${pay}`,v:'pay',cls:'ghost',off:S.gold<pay}]);
+      [{t:'Сражаться',v:'fight'},{t:`Откупиться · ${pay}`,v:'pay',cls:'ghost',off:S.gold<pay}].concat(adsReady()?[{t:'▶ Реклама: уйти без потерь',v:'ad',cls:'ghost'}]:[]));
     if(v==='pay'){S.gold-=pay;return `Откупились от бандитов за ${pay}`}
+    if(v==='ad'){if(await showAd())return 'Проводник увёл караван тайной тропой, бандиты остались ни с чем';toast('Реклама не загрузилась — придётся драться')}
     const win=await battle(power(),B,'Бандиты');
     if(win){const loot=B*25+ri(0,40);S.gold+=loot;let lost=0;if(S.guards&&Math.random()<.3){S.guards--;lost=1}
       return `Разбили бандитов, добыча ${loot}`+(lost?', погиб 1 наёмник':'')}
@@ -710,6 +723,7 @@ $('#view').addEventListener('click',e=>{
   if(dot&&dot.dataset.to){act('travel',dot);return}
   const b=e.target.closest('[data-act]');if(b&&!b.disabled)act(b.dataset.act,b)});
 
+initAds();
 const saved=restore();
 if(saved){S=saved;render()}
 else{newGame();render();
