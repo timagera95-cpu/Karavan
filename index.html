@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>Караван Шёлкового пути</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:ital,wght@0,400;0,700;1,400&family=Fira+Sans:wght@400;500;600&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+
+/* Layout: one-column phone app framed like a Timurid portal: title and day, resource strip, a skyline banner of the current city with its cheap and dear goods, arched tabs, tiled rows of goods with drawn icons; sheets crowned with a tile band. Lapis night, turquoise faience, gold leaf, ivory. */
+:root{
+  color-scheme: dark;
+  --bg:#0a1430;
+  --panel:#122149;
+  --panel2:#1a2d60;
+  --line:#2c4485;
+  --fg:#f5ecd7;
+  --muted:#a6b3d6;
+  --turq:#3fc1b0;
+  --turq2:#1f8c86;
+  --gold:#e8b44a;
+  --gold2:#b8862c;
+  --saffron:#e8b44a;
+  --red:#ec6b55;
+  --green:#86d48f;
+  --sand:#cfa86b;
+  --parch:#ead6a6;
+  --parch2:#d9bd83;
+  --ink:#4a2f16;
+  --ink2:#8a5a2b;
+  --cinnabar:#a8331f;
+  --water:#6f8f93;
+  --tiles:radial-gradient(circle at 6px 6px, var(--gold) 0 1.8px, transparent 2.3px) 0 0/12px 12px,
+    repeating-linear-gradient(45deg, var(--turq) 0 2px, transparent 2px 8.5px),
+    repeating-linear-gradient(-45deg, var(--turq) 0 2px, transparent 2px 8.5px), var(--panel2);
+  --display:"Philosopher", "Georgia", serif;
+  --body:"Fira Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+html,body{height:100%}
+body{background-color:var(--bg);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23162857' stroke-width='1.2'%3E%3Crect x='20' y='20' width='24' height='24'/%3E%3Crect x='20' y='20' width='24' height='24' transform='rotate(45 32 32)'/%3E%3Cpath d='M0 0L15 15M64 0L49 15M0 64L15 49M64 64L49 49'/%3E%3C/g%3E%3C/svg%3E");
+  color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.4;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+*{box-sizing:border-box}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible{outline:2px solid var(--turq);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;padding-block:10px 40px;display:flex;flex-direction:column;gap:12px}
+.num{font-variant-numeric:tabular-nums}
+.ico{display:block}
+
+/* header */
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:4px}
+.logo{font-family:var(--display);font-weight:700;font-size:32px;line-height:1;color:var(--gold);letter-spacing:.02em}
+.logo small{display:block;font-family:var(--body);font-weight:500;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--sand);margin-top:5px}
+.daybox{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill{display:flex;align-items:center;gap:5px;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:4px 10px 4px 6px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.pill b{color:var(--fg);font-size:15px}
+.pill .ico{width:20px;height:20px}
+
+/* resources */
+.stats{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:grid;grid-template-columns:1.1fr 1.2fr 1fr .95fr;gap:6px;border-bottom:1px solid var(--line)}
+.stat{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 7px;min-width:0}
+.stat .ico{width:22px;height:22px;flex:none}
+.stat > div{min-width:0;flex:1}
+.stat b{display:block;font-size:15px;font-weight:600;line-height:1.15;white-space:nowrap}
+.stat span{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.stat.gold b{color:var(--gold)}
+.cbar{height:5px;border-radius:99px;background:var(--bg);margin-top:4px;overflow:hidden}
+.cbar i{display:block;height:100%;background:linear-gradient(90deg,var(--turq2),var(--turq));border-radius:99px}
+.cbar.full i{background:var(--gold)}
+.stat.want{flex-direction:column;align-items:flex-start;justify-content:center;gap:3px}
+.stars{display:flex;gap:0}
+.st{width:11px;height:11px;flex:none;color:var(--line)}
+.st.on{color:var(--red)}
+
+/* city banner */
+.city{display:flex;flex-direction:column;gap:8px}
+.banner{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--gold2);box-shadow:0 0 0 3px var(--bg),0 0 0 4px var(--line)}
+.banner .sky{display:block;width:100%;height:160px}
+.bcap{position:absolute;left:0;right:0;bottom:0;padding:30px 14px 11px;background:linear-gradient(transparent,rgba(5,9,24,.88))}
+.bcap h1{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;margin:3px 0 0;color:var(--fg);text-wrap:balance}
+.bcap .rank{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:3px 10px 3px 5px;border-radius:99px;background:var(--panel);border:1px solid var(--line)}
+.chip .ico{width:18px;height:18px}
+.chip.cg{border-color:rgba(134,212,143,.45);color:var(--green)}
+.chip.cd{border-color:rgba(232,180,74,.5);color:var(--gold)}
+.chip.warn{border-color:rgba(236,107,85,.5);color:var(--red);padding-left:10px}
+.chip.plain{padding-left:10px;color:var(--muted)}
+.chip.goldc{color:#24170a;background:var(--gold);border-color:var(--gold);padding-left:10px;font-weight:600}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+.legend .lg{color:var(--green)} .legend .ld{color:var(--gold)}
+
+/* tabs */
+.tabs{display:grid;gap:6px;border-bottom:2px solid var(--gold2);padding-top:2px}
+.tab{padding:11px 2px 9px;border-radius:16px 16px 0 0;font-weight:600;font-size:13.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-bottom:0}
+.tab[aria-selected="true"]{background:linear-gradient(180deg,#f3cb6c,var(--gold2));color:#24170a;border-color:var(--gold)}
+
+/* bazaar */
+.goods{display:flex;flex-direction:column;gap:8px}
+.good{display:grid;grid-template-columns:46px 1fr auto;gap:8px 10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+.gi{width:46px;height:46px;border-radius:10px;background:radial-gradient(circle at 50% 35%,var(--panel2),var(--bg));border:1px solid var(--turq2);display:grid;place-items:center}
+.gi .ico{width:30px;height:30px}
+.good .name{font-family:var(--display);font-weight:700;font-size:18px;line-height:1.1;min-width:0}
+.good .have{font-family:var(--body);font-weight:400;font-size:12.5px;color:var(--muted);margin-top:3px}
+.prices{display:grid;grid-template-columns:auto auto;gap:0 7px;align-items:baseline;text-align:right;font-size:11.5px;color:var(--muted)}
+.prices b{color:var(--turq);font-size:16px}
+.prices b.sp{color:var(--gold)}
+.tag{display:inline-block;font-family:var(--body);font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;margin-left:6px;vertical-align:3px}
+.tag.cheap{background:rgba(134,212,143,.15);color:var(--green)}
+.tag.dear{background:rgba(232,180,74,.15);color:var(--gold)}
+.btnrow{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.b{padding:9px 4px;border-radius:8px;font-weight:600;font-size:13px;border:1px solid var(--line);background:var(--panel2)}
+.b.buy{border-color:rgba(63,193,176,.55);color:var(--turq)}
+.b.sell{border-color:rgba(232,180,74,.55);color:var(--gold)}
+.b:disabled{opacity:.33;cursor:default}
+.b:active:not(:disabled){transform:scale(.97)}
+.hint{font-size:13px;color:var(--muted);margin:0}
+
+/* caravanserai & own city */
+.cards{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;grid-template-columns:42px 1fr auto;gap:2px 12px;align-items:center}
+.ci{grid-row:1/3;grid-column:1;width:42px;height:42px;border-radius:10px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center}
+.ci .ico{width:26px;height:26px}
+.card h3{grid-column:2;margin:0;font-family:var(--display);font-size:18px}
+.card p{grid-column:2;margin:0;font-size:13px;color:var(--muted)}
+.card .act{grid-row:1/3;grid-column:3;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.card.done h3::after{content:" ✓";color:var(--green)}
+.b.main{background:linear-gradient(180deg,#f3cb6c,var(--gold2));color:#24170a;border-color:var(--gold);padding:9px 12px}
+.b.ghost{background:transparent}
+.power{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);border-radius:12px;padding:10px 12px;border:1px solid var(--line)}
+.power b{font-size:24px;color:var(--turq)}
+.power small{display:block;font-size:12px;color:var(--muted)}
+.hero{background:var(--panel2);border:1px solid var(--gold2);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.hero h2{margin:0;font-family:var(--display);font-size:24px}
+.hero p{margin:0;color:var(--muted);font-size:14px}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+.kv div{background:var(--panel);border-radius:8px;padding:6px 8px}
+.kv b{display:block;font-size:17px;color:var(--gold)}
+.kv span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* parchment map */
+.mapscroll{overflow-x:auto;border-radius:12px;border:2px solid var(--ink2);background:var(--parch);-webkit-overflow-scrolling:touch}
+.mapscroll svg{display:block;width:900px;height:auto;max-width:none}
+.city-dot{cursor:pointer}
+.maphint{font-size:12.5px;color:var(--muted);margin:6px 2px 0}
+.orn{display:flex;align-items:center;gap:8px;color:var(--gold)}
+.orn::before,.orn::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold2),transparent)}
+.routes{display:flex;flex-direction:column;gap:8px}
+.route{display:grid;grid-template-columns:1fr auto;gap:2px 10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:left;width:100%}
+.route b{font-family:var(--display);font-size:19px}
+.route .meta{font-size:13px;color:var(--muted)}
+.route .go{grid-row:1/3;grid-column:2;align-self:center;background:var(--turq);color:#08221f;font-weight:600;border-radius:8px;padding:8px 14px}
+.danger1{color:var(--green)}.danger2{color:var(--gold)}.danger3{color:var(--red)}
+
+/* sheets */
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(5,9,24,.9);display:flex;align-items:center;justify-content:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--gold2);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;max-height:100%;overflow:auto}
+.sheet::before{content:"";flex:none;height:12px;margin:-18px -18px 2px;border-radius:15px 15px 0 0;background:var(--tiles);border-bottom:1px solid var(--gold2)}
+.sheet h2{margin:0;font-family:var(--display);font-size:25px;color:var(--gold);text-wrap:balance}
+.sheet p{margin:0;color:var(--muted)}
+.sheet .btns{display:flex;flex-direction:column;gap:8px}
+.sheet .btns .b{padding:12px;font-size:15px}
+.sheet input{width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+.track{position:relative;height:46px;border-bottom:2px dashed var(--sand);margin:6px 4px}
+.camels{position:absolute;bottom:2px;left:0;transition:left .3s linear;display:flex;gap:3px}
+.camel{width:20px;height:16px}
+.journal{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:4px;min-height:40px}
+.journal div::before{content:"◆ ";color:var(--gold2);font-size:10px;vertical-align:1px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center}
+.vs b{font-size:26px}
+.vs .you b{color:var(--turq)} .vs .foe b{color:var(--red)}
+.bar{height:8px;border-radius:99px;background:var(--panel2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--turq);transition:width .35s}
+.bar.foe i{background:var(--red)}
+.result{font-family:var(--display);font-size:22px}
+.result.win{color:var(--green)} .result.lose{color:var(--red)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--panel2);border:1px solid var(--gold2);color:var(--fg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 32px);text-align:center}
+@media (max-width:370px){.stat span{font-size:9px}.stat .ico{width:18px;height:18px}.logo{font-size:28px}}
+@media (prefers-reduced-motion: reduce){.camels,.bar i{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="app" id="app">
+  <header class="head"><div class="logo">Караван<small>Великий Шёлковый путь</small></div><div class="daybox" id="daybox"></div></header>
+  <div class="stats" id="stats"></div>
+  <section class="city" id="city"></section>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <main id="view"></main>
+</div>
+<div id="layer"></div>
+
+<script>
+const GOODS=[
+ {id:'salt',n:'Соль',b:8,s:1},{id:'cotton',n:'Хлопок',b:12,s:1},{id:'fruit',n:'Сухофрукты',b:20,s:1},
+ {id:'tea',n:'Чай',b:30,s:1},{id:'paper',n:'Бумага',b:35,s:1},{id:'spice',n:'Пряности',b:45,s:1},
+ {id:'glass',n:'Стекло',b:50,s:1},{id:'silk',n:'Шёлк',b:60,s:1},{id:'china',n:'Фарфор',b:70,s:1},
+ {id:'carpet',n:'Ковры',b:85,s:1},{id:'jade',n:'Нефрит',b:110,s:1},{id:'horse',n:'Кони',b:150,s:3}];
+const CITIES={
+ baghdad:{n:'Багдад',x:42,y:250,strict:true,m:{glass:.6,spice:.7,silk:1.8,china:1.8,paper:1.4,jade:1.6,tea:1.6}},
+ nishapur:{n:'Нишапур',x:160,y:228,m:{salt:.7,fruit:.8,silk:1.5,tea:1.4,horse:1.2}},
+ merv:{n:'Мерв',x:222,y:205,m:{spice:.8,carpet:.8,cotton:1.3,china:1.4,paper:1.3}},
+ khiva:{n:'Хива',x:228,y:98,m:{cotton:.6,carpet:.75,salt:.75,china:1.5,silk:1.3,tea:1.3}},
+ oasis1:{n:'Оазис Каракумов',x:262,y:172,oasis:true},
+ bukhara:{n:'Бухара',x:300,y:150,strict:true,m:{carpet:.6,fruit:.8,spice:1.4,china:1.3,jade:1.3}},
+ samarkand:{n:'Самарканд',x:350,y:172,strict:true,m:{paper:.55,fruit:.6,cotton:1.3,spice:1.25,glass:1.3}},
+ balkh:{n:'Балх',x:318,y:268,m:{fruit:.6,spice:.75,silk:1.4,salt:1.3}},
+ termez:{n:'Термез',x:368,y:246,m:{salt:.7,horse:1.3,tea:1.3,glass:1.25}},
+ tashkent:{n:'Ташкент',x:392,y:110,m:{cotton:.7,fruit:.7,carpet:1.35,tea:1.3}},
+ kokand:{n:'Коканд',x:452,y:136,m:{horse:.55,silk:.85,glass:1.4,salt:1.3}},
+ kashgar:{n:'Кашгар',x:532,y:176,m:{horse:1.3,carpet:1.4,fruit:1.3,salt:1.3,cotton:.8}},
+ khotan:{n:'Хотан',x:588,y:252,m:{jade:.5,carpet:.8,glass:1.5,horse:1.3}},
+ turfan:{n:'Турфан',x:648,y:92,m:{fruit:.5,salt:.7,carpet:1.4,glass:1.4}},
+ oasis2:{n:'Оазис Лоб-Нор',x:690,y:196,oasis:true},
+ dunhuang:{n:'Дуньхуан',x:742,y:150,m:{salt:1.3,fruit:1.3,horse:1.4,spice:1.4,paper:.8}},
+ lanzhou:{n:'Ланьчжоу',x:818,y:206,m:{tea:.7,silk:.7,horse:1.4,jade:1.4}},
+ changan:{n:'Чанъань',x:872,y:262,strict:true,m:{silk:.5,china:.55,tea:.55,paper:.7,horse:1.6,glass:1.9,carpet:1.6,jade:1.5,spice:1.5}}};
+const ROUTES=[['baghdad','nishapur',6,.35],['nishapur','merv',3,.25],['merv','khiva',4,.25],['merv','oasis1',2,.3],['oasis1','bukhara',2,.3],
+ ['merv','bukhara',3,.25],['khiva','bukhara',3,.2],['bukhara','samarkand',2,.15],['samarkand','tashkent',2,.15],['samarkand','termez',3,.2],
+ ['termez','balkh',1,.2],['merv','balkh',4,.35],['tashkent','kokand',2,.15],['kokand','kashgar',4,.35],['balkh','kashgar',7,.45],
+ ['kashgar','khotan',4,.3],['kashgar','turfan',6,.35],['khotan','oasis2',3,.4],['oasis2','dunhuang',3,.4],['khotan','dunhuang',6,.45],
+ ['turfan','dunhuang',4,.3],['dunhuang','lanzhou',4,.25],['lanzhou','changan',3,.15]];
+const WEAPONS=['Дубины','Сабли','Луки и сабли','Кольчуги и копья'];
+const WEAPON_COST=[150,400,900];
+const LEVELS=['Посёлок','Городок','Город','Большой город','Столица'];
+const BUILD={
+ bazaar:{n:'Базар',c:600,d:'Продаёте товар без скидки купцам: цена продажи равна цене покупки.'},
+ inn:{n:'Караван-сарай',c:500,d:'Наёмники в вашем городе стоят 30 вместо 50.'},
+ workshop:{n:'Мастерская',c:900,d:'Выбранный товар в вашем городе стоит вдвое дешевле.'},
+ walls:{n:'Крепостные стены',c:700,d:'Бандиты вдвое реже нападают на дорогах к вашему городу.'},
+ madrasa:{n:'Медресе',c:1200,d:'Слава города: +30 золотых в казну каждый день.'}};
+const WAGE=2, GOAL=10000, FOUND=2000, KEY='karavan-v1';
+let S, tab='market', busy=false;
+const ICON={
+ salt:'<path d="M3 19h18l-4.5-7-2.5 2.5L11 9l-3.5 5L6 13z" fill="#eef2f5"/><path d="M3 19.5h18" stroke="#9fb3c8" stroke-width="1.5"/>',
+ cotton:'<path d="M12 21v-6" stroke="#6f8f3c" stroke-width="1.6"/><path d="M8 18l4-2.5 4 2.5" stroke="#6f8f3c" stroke-width="1.4" fill="none"/><circle cx="8.6" cy="10.5" r="3.4" fill="#fff"/><circle cx="15.4" cy="10.5" r="3.4" fill="#fff"/><circle cx="12" cy="7" r="3.6" fill="#fff"/><circle cx="12" cy="12" r="3" fill="#ece6d8"/>',
+ fruit:'<circle cx="10" cy="14.5" r="5" fill="#f0a040"/><circle cx="15.8" cy="12.5" r="3.8" fill="#c96f24"/><path d="M12 9c1-3 4-4.5 6.5-3.5-1 2.3-3.3 3.5-6.5 3.5z" fill="#6aa84f"/>',
+ tea:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z" fill="#3fc1b0"/><path d="M16 11h2a2 2 0 0 1 0 4h-2" stroke="#3fc1b0" stroke-width="1.6" fill="none"/><path d="M4 20.5h14" stroke="#e8b44a" stroke-width="1.6"/><path d="M9 3.5c-1 1.5 1 2 0 3.5M12.5 3.5c-1 1.5 1 2 0 3.5" stroke="#a6b3d6" stroke-width="1.2" fill="none"/>',
+ paper:'<rect x="5" y="4" width="12" height="16" rx="1" fill="#f3e2b8"/><rect x="15" y="4" width="4" height="16" rx="2" fill="#d9bd83"/><path d="M8 8h6M8 11h6M8 14h4" stroke="#8a5a2b" stroke-width="1.2"/>',
+ spice:'<path d="M7 9c-2.2 3-2.2 8 0 11h10c2.2-3 2.2-8 0-11z" fill="#c45a2c"/><path d="M8 9h8l-1-3H9z" fill="#a8461f"/><path d="M8 6h8" stroke="#e8b44a" stroke-width="1.5"/><circle cx="12" cy="15" r="2.2" fill="#f0a040"/>',
+ glass:'<path d="M10 3h4v4c3 2 4 5 4 8a6 6 0 0 1-12 0c0-3 1-6 4-8z" fill="#7fd3e0" opacity=".9"/><path d="M9 3h6" stroke="#e8b44a" stroke-width="1.6"/><path d="M8.8 13c0 3 1 4.2 2.2 5" stroke="#fff" stroke-width="1.2" fill="none" opacity=".8"/>',
+ silk:'<rect x="3" y="7" width="13" height="10" rx="2" fill="#d6456a"/><ellipse cx="16" cy="12" rx="3" ry="5" fill="#e8708f"/><ellipse cx="16" cy="12" rx="1.2" ry="2" fill="#a32c4c"/><path d="M5 10c2 1 4-1 6 0s3 1 4 0M5 13.5c2 1 4-1 6 0s3 1 4 0" stroke="#f7c1cf" stroke-width="1" fill="none"/>',
+ china:'<path d="M3 10.5h18a9 7.5 0 0 1-18 0z" fill="#f5f2ea"/><path d="M6.5 13c2 2 3.5 2 5.5 0s3.5-2 5.5 0" stroke="#2f5aa8" stroke-width="1.4" fill="none"/><path d="M9 18h6v2.2H9z" fill="#d9d3c4"/><path d="M3 10.5h18" stroke="#2f5aa8" stroke-width="1.3"/>',
+ carpet:'<rect x="4" y="5" width="16" height="14" fill="#a8331f"/><rect x="6" y="7" width="12" height="10" fill="none" stroke="#e8b44a" stroke-width="1"/><path d="M12 8.5l3 3.5-3 3.5-3-3.5z" fill="#1f3f8a"/><path d="M5 5V3M8 5V3M11 5V3M14 5V3M17 5V3M19.5 5V3M5 21v-2M8 21v-2M11 21v-2M14 21v-2M17 21v-2M19.5 21v-2" stroke="#f5ecd7" stroke-width=".9"/>',
+ jade:'<path d="M12 3l7 5v8l-7 5-7-5V8z" fill="#3fa36a"/><path d="M12 3l7 5-7 4-7-4z" fill="#62c48a"/><path d="M12 12v9" stroke="#2c7a4e" stroke-width="1"/>',
+ horse:'<path d="M7 21l1-6c-2-1-3-3-2-6l3-3 1-3 2 2c3 0 6 2 6 6v2l-2 1-1-2-2 1 1 8z" fill="#b07a45"/><path d="M10.2 3.2l2 2c-2 0-3.2 1-4.2 2.2" stroke="#3b2414" stroke-width="1.8" fill="none"/><circle cx="14" cy="8" r="1" fill="#1a1008"/>'
+};
+const UI={
+ coin:'<circle cx="12" cy="12" r="9" fill="#e8b44a"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#b8862c" stroke-width="1.2"/><path d="M12 7.6l1.3 2.7 3 .4-2.2 2 .6 3L12 14.2l-2.7 1.5.6-3-2.2-2 3-.4z" fill="#b8862c"/>',
+ camel:'<path fill="#cfa86b" d="M2.5 13c1-4 3-6 6-3 1-4 5-4 6 0 1-1 2.5-1 3.5 0l1.5-4 2.5 1-2 4.5V15h-1.5v5h-1.4v-5H7v5H5.6v-5H4.4v5H3z"/>',
+ sword:'<path d="M6 18L16.5 7.5" stroke="#dfe6ee" stroke-width="2.6" stroke-linecap="round"/><path d="M16.5 7.5L20 4" stroke="#dfe6ee" stroke-width="1.6"/><path d="M4 15l5 5M3 21l2.5-2.5" stroke="#e8b44a" stroke-width="2.2" stroke-linecap="round"/>',
+ shield:'<path d="M12 3l7.5 3v5c0 5-3 8.5-7.5 10.5C7.5 19.5 4.5 16 4.5 11V6z" fill="#3fc1b0"/><path d="M12 6.2l4.5 2v3c0 3.2-2 5.4-4.5 6.8-2.5-1.4-4.5-3.6-4.5-6.8v-3z" fill="#1f8c86"/><path d="M12 8v8" stroke="#e8b44a" stroke-width="1.4"/>',
+ compass:'<circle cx="12" cy="12" r="9" fill="none" stroke="#cfa86b" stroke-width="1.6"/><path d="M12 4l2.6 8L12 20l-2.6-8z" fill="#ec6b55"/><path d="M9.4 12h5.2L12 20z" fill="#f5ecd7"/>',
+ box:'<path d="M3 8l9-4 9 4v9l-9 4-9-4z" fill="#b07a45"/><path d="M3 8l9 4 9-4M12 12v9" stroke="#6b4a2a" stroke-width="1.3" fill="none"/>',
+ dome:'<path d="M5 20.5V12h14v8.5z" fill="#2c4485"/><path d="M5 12c0-5 3-8 7-9 4 1 7 4 7 9z" fill="#3fc1b0"/><path d="M12 3V1" stroke="#e8b44a" stroke-width="1.6"/><path d="M10 20.5v-4a2 2 0 0 1 4 0v4z" fill="#0a1430"/>',
+ tower:'<path d="M4 21V9l2-2 2 2v3h8V9l2-2 2 2v12z" fill="#cfa86b"/><path d="M10 21v-4a2 2 0 0 1 4 0v4z" fill="#0a1430"/><path d="M4 9h4M16 9h4" stroke="#8a5a2b" stroke-width="1.2"/>',
+ star:'<path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 16.9 6.4 20.1l1.4-6.3L3 9.5l6.4-.6z" fill="currentColor"/>'
+};
+const ico=(inner,cls='')=>`<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
+const INNI={camel:UI.camel,hire:UI.sword,weapon:UI.shield,guide:UI.compass,bribe:UI.coin};
+const TOWNI={bazaar:UI.coin,inn:UI.camel,workshop:UI.box,walls:UI.tower,madrasa:UI.dome};
+function skyline(id){
+  const own=isOwn(id), oasis=CITIES[id].oasis&&!own;
+  let h0=7;for(const ch of id)h0=(h0*31+ch.charCodeAt(0))%100000;
+  const r=k=>hash(h0+k*13.7), f=n=>(+n).toFixed(1);
+  const SIL='#0d1636', SIL2='#16244d', T='#35b3a5', TD='#1f7f78', G='#e8b44a', B=130;
+  const dome=(x,w)=>{const top=B-16,hgt=w*.95;return `<rect x="${f(x-w/2)}" y="${top}" width="${w}" height="20" fill="${SIL2}"/><rect x="${f(x-w/2)}" y="${top}" width="${w}" height="3" fill="${TD}"/>
+    <path d="M${f(x-w/2+2)} ${top}C${f(x-w/2-4)} ${f(top-w*.55)} ${f(x-w*.16)} ${f(top-w*.8)} ${x} ${f(top-hgt)}C${f(x+w*.16)} ${f(top-w*.8)} ${f(x+w/2+4)} ${f(top-w*.55)} ${f(x+w/2-2)} ${top}Z" fill="${T}"/>
+    <path d="M${x} ${f(top-hgt)}C${f(x-w*.12)} ${f(top-w*.6)} ${f(x-w*.2)} ${f(top-w*.3)} ${f(x-w*.22)} ${top}M${x} ${f(top-hgt)}C${f(x+w*.12)} ${f(top-w*.6)} ${f(x+w*.2)} ${f(top-w*.3)} ${f(x+w*.22)} ${top}M${x} ${f(top-hgt)}V${top}" stroke="${TD}" stroke-width="1.2" fill="none"/>
+    <path d="M${x} ${f(top-hgt)}v-8" stroke="${G}" stroke-width="1.5"/><circle cx="${x}" cy="${f(top-hgt-9)}" r="1.8" fill="${G}"/>`};
+  const minaret=(x,h)=>{const t=B-h;return `<path d="M${x-5} ${B}L${x-4} ${t+12}H${x+4}L${x+5} ${B}Z" fill="${SIL2}"/>`+
+    [.25,.5,.75].map(q=>`<rect x="${x-4.6}" y="${f(B-h*q)}" width="9.2" height="2.4" fill="${T}"/>`).join('')+
+    `<rect x="${x-7}" y="${t+9}" width="14" height="3.5" fill="${SIL}"/><rect x="${x-3.5}" y="${t+3}" width="7" height="6" fill="${SIL2}"/><path d="M${x-3.5} ${t+3}Q${x} ${t-6} ${x+3.5} ${t+3}Z" fill="${T}"/>`};
+  const portal=(x,w,h)=>{const t=B-h,aw=w*.46,ah=h*.72;return `<rect x="${f(x-w/2)}" y="${t}" width="${w}" height="${h}" fill="${SIL2}"/>
+    <rect x="${f(x-w/2+3)}" y="${t+3}" width="${w-6}" height="${h-3}" fill="none" stroke="${T}" stroke-width="2"/><rect x="${f(x-w/2-2)}" y="${t-3}" width="${w+4}" height="4" fill="${TD}"/>
+    <path d="M${f(x-aw/2)} ${B}V${f(B-ah*.62)}Q${f(x-aw/2)} ${f(B-ah*.92)} ${x} ${f(B-ah)}Q${f(x+aw/2)} ${f(B-ah*.92)} ${f(x+aw/2)} ${f(B-ah*.62)}V${B}Z" fill="#070e24"/>
+    <path d="M${f(x-aw/2+4)} ${B}V${f(B-ah*.6)}Q${f(x-aw/2+4)} ${f(B-ah*.86)} ${x} ${f(B-ah+5)}Q${f(x+aw/2-4)} ${f(B-ah*.86)} ${f(x+aw/2-4)} ${f(B-ah*.6)}V${B}" fill="none" stroke="${G}" stroke-width="1" opacity=".75"/>
+    <circle cx="${x}" cy="${f(B-ah*.55)}" r="2.2" fill="${G}" opacity=".9"/>`};
+  const palm=(x,k)=>{const tx=x+2*k,ty=B-46*k;return `<path d="M${x} ${B}Q${f(x+6*k)} ${f(B-25*k)} ${f(tx)} ${f(ty)}" stroke="#20140c" stroke-width="${f(3*k)}" fill="none"/>`+
+    [[-22,-4],[22,-4],[-15,-14],[15,-14],[0,-20]].map(([a,c])=>`<path d="M${f(tx)} ${f(ty)}Q${f(tx+a*.5*k)} ${f(ty+(c-8)*k)} ${f(tx+a*k)} ${f(ty+(c+12)*k)}" stroke="#123020" stroke-width="${f(3.4*k)}" fill="none" stroke-linecap="round"/>`).join('')};
+  let s=`<svg class="sky" viewBox="0 0 360 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+   <defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f1c48"/><stop offset=".48" stop-color="#3b2d68"/><stop offset=".76" stop-color="#b8664a"/><stop offset="1" stop-color="#efb45a"/></linearGradient></defs>
+   <rect width="360" height="160" fill="url(#skyg)"/>`;
+  for(let k=0;k<24;k++)s+=`<circle cx="${f(r(k)*360)}" cy="${f(r(k+50)*62)}" r="${(.5+r(k+90)*.8).toFixed(2)}" fill="#f5ecd7" opacity="${(.35+r(k+120)*.55).toFixed(2)}"/>`;
+  const mx=f(30+r(7)*300);
+  s+=`<circle cx="${mx}" cy="26" r="9" fill="#f5ecd7"/><circle cx="${+mx+4}" cy="23" r="8.3" fill="#18214f"/>`;
+  s+=`<path d="M0 116Q50 98 110 110T230 104T360 112V160H0Z" fill="#2a2150"/>`;
+  if(oasis){
+    s+=`<ellipse cx="180" cy="134" rx="78" ry="10" fill="${T}" opacity=".85"/><ellipse cx="172" cy="132" rx="46" ry="3.5" fill="#9ae8de" opacity=".45"/>`;
+    s+=palm(98,1)+palm(130,.78)+palm(232,.9)+palm(262,1.15);
+    s+=`<path d="M292 ${B}l15-22 15 22z" fill="#7a4a2a"/><path d="M302 ${B}l5-9 5 9z" fill="${SIL}"/>`;
+  }else{
+    const big=CITIES[id].strict||own, pw=big?80:62, ph=big?76:58;
+    for(let x=-4;x<360;x+=18+r(x+1)*16){const hh=10+r(x+3)*18;s+=`<rect x="${f(x)}" y="${f(B-hh)}" width="${f(14+r(x+5)*12)}" height="${f(hh+2)}" fill="${SIL}"/>`}
+    s+=dome(92,big?48:38);
+    if(r(31)>.4||big)s+=dome(270,big?42:34);
+    if(r(41)>.45)s+=minaret(34,64);
+    if(r(51)>.45)s+=minaret(328,60);
+    s+=minaret(180-pw/2-11,big?100:82)+minaret(180+pw/2+11,big?100:82);
+    s+=portal(180,pw,ph);
+    if(own)s+=`<path d="M180 ${B-ph-3}v-22" stroke="${G}" stroke-width="1.6"/><path d="M180 ${B-ph-25}h17l-4 5 4 5h-17z" fill="#c23a24"/>`;
+  }
+  return s+`<rect y="${B-1}" width="360" height="31" fill="${SIL}"/></svg>`;
+}
+
+const $=s=>document.querySelector(s);
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const ri=(a,b)=>Math.floor(rnd(a,b+1));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fmt=n=>Math.round(n).toLocaleString('ru-RU');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const G=id=>GOODS.find(g=>g.id===id);
+const cap=()=>S.camels*10;
+const load=()=>GOODS.reduce((a,g)=>a+(S.cargo[g.id]||0)*g.s,0);
+const power=()=>1+S.guards*(1+.5*S.weapon);
+const worth=()=>S.gold+GOODS.reduce((a,g)=>a+(S.cargo[g.id]||0)*g.b,0)+(S.own?S.own.lvl*1000:0);
+const isOwn=c=>S.own&&S.own.site===c;
+const cityName=c=>isOwn(c)?S.own.name:CITIES[c].n;
+const isEmptyOasis=c=>CITIES[c].oasis&&!isOwn(c);
+
+function mults(c){
+  if(isOwn(c)){const m={};GOODS.forEach(g=>m[g.id]=1.05);if(S.own.b.workshop)m[S.own.b.workshop]=.5;return m}
+  return CITIES[c].m||{};
+}
+function genPrices(c){const p={},m=mults(c);GOODS.forEach(g=>{p[g.id]=Math.max(3,Math.round(g.b*(m[g.id]||1)*rnd(.85,1.15)))});return p}
+function newGame(){S={gold:300,day:1,city:'khiva',camels:2,guards:1,weapon:0,guide:false,wanted:0,robbed:0,won:false,cargo:{},prices:{},own:null};S.prices=genPrices('khiva');save()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function restore(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.city){
+  if(!CITIES[s.city])s.city='khiva';if(s.own===undefined)s.own=null;s.cargo=s.cargo||{};
+  if(!s.prices||GOODS.some(g=>!s.prices[g.id]))s.prices=null;return s}}catch(e){}return null}
+
+/* own city economy */
+function income(){if(!S.own)return 0;const b=S.own.b;let n=0;['bazaar','inn','walls'].forEach(k=>{if(b[k])n++});if(b.workshop)n++;
+  return 15*S.own.lvl+10*n+(b.madrasa?30:0)}
+function accrue(){if(!S.own)return;const d=S.day-S.own.last;if(d>0){S.own.treasury+=d*income();S.own.last=S.day}}
+
+function rank(){
+  if(S.robbed>=15)return 'Главарь разбойников';
+  if(S.robbed>=5)return 'Разбойник с большой дороги';
+  if(S.own&&S.own.lvl>=5)return 'Правитель столицы '+S.own.name;
+  if(S.own)return 'Хозяин города '+S.own.name;
+  const w=worth();
+  if(w>=GOAL)return 'Великий купец Шёлкового пути';
+  if(w>=5000)return 'Богатый купец';
+  if(w>=1500)return 'Купец';
+  return 'Бедный торговец';
+}
+function cityNote(c){
+  if(isEmptyOasis(c))return 'Пустой оазис: вода, пальмы и место для нового города.';
+  if(isOwn(c))return `${LEVELS[S.own.lvl-1]}, основан вами. Доход ${income()} золотых в день.`;
+  const m=CITIES[c].m;
+  const cheap=GOODS.filter(g=>(m[g.id]||1)<.85).map(g=>g.n.toLowerCase());
+  const dear=GOODS.filter(g=>(m[g.id]||1)>1.25).map(g=>g.n.toLowerCase());
+  return `Дёшево: ${cheap.join(', ')||'—'}. Дорого: ${dear.join(', ')||'—'}.`+(CITIES[c].strict?' Строгая стража.':'');
+}
+
+/* ---------- render ---------- */
+function renderStats(){
+  $('#daybox').innerHTML=`<span class="pill"><b class="num">${S.day}</b>день</span><span class="pill">${ico(UI.camel)}<b class="num">${S.camels}</b></span>`;
+  const pct=Math.min(100,load()/cap()*100);
+  const stars=[0,1,2,3,4].map(i=>`<svg viewBox="0 0 24 24" class="st ${i<S.wanted?'on':''}" aria-hidden="true">${UI.star}</svg>`).join('');
+  $('#stats').innerHTML=`
+   <div class="stat gold">${ico(UI.coin)}<div><b class="num">${fmt(S.gold)}</b><span>золото</span></div></div>
+   <div class="stat">${ico(UI.box)}<div><b class="num">${load()}/${cap()}</b><div class="cbar ${pct>=100?'full':''}"><i style="width:${pct}%"></i></div></div></div>
+   <div class="stat">${ico(UI.sword)}<div><b class="num">${power().toFixed(1)}</b><span>${S.guards} охр.</span></div></div>
+   <div class="stat want"><div class="stars" aria-label="Розыск ${S.wanted} из 5">${stars}</div><span>розыск</span></div>`;
+}
+function renderCity(){
+  const c=S.city;let chips='',legend='';
+  if(isEmptyOasis(c))chips='<span class="chip plain">Вода и пальмы</span><span class="chip goldc">Место для вашего города</span>';
+  else if(isOwn(c))chips=`<span class="chip goldc">Ваш город · ${LEVELS[S.own.lvl-1]}</span><span class="chip cg" style="padding-left:10px">Доход ${income()} в день</span>`;
+  else{const m=CITIES[c].m;
+    GOODS.filter(g=>(m[g.id]||1)<.85).forEach(g=>chips+=`<span class="chip cg">${ico(ICON[g.id])}${g.n}</span>`);
+    GOODS.filter(g=>(m[g.id]||1)>1.25).forEach(g=>chips+=`<span class="chip cd">${ico(ICON[g.id])}${g.n}</span>`);
+    if(CITIES[c].strict)chips+='<span class="chip warn">Строгая стража</span>';
+    legend='<div class="legend"><span class="lg">● дёшево здесь</span><span class="ld">● дорого здесь</span></div>'}
+  $('#city').innerHTML=`<div class="banner">${skyline(c)}<div class="bcap"><div class="rank">${esc(rank())}</div><h1>${esc(cityName(c))}</h1></div></div>${legend}<div class="chips">${chips}</div>`;
+}
+function tabList(){
+  if(isEmptyOasis(S.city))return [['market','Оазис'],['inn','Караван-сарай'],['map','В путь']];
+  if(isOwn(S.city))return [['market','Базар'],['town','Мой город'],['inn','Сарай'],['map','В путь']];
+  return [['market','Базар'],['inn','Караван-сарай'],['map','В путь']];
+}
+function renderTabs(){
+  const l=tabList();if(!l.some(t=>t[0]===tab))tab='market';
+  const el=$('#tabs');el.style.gridTemplateColumns=`repeat(${l.length},1fr)`;
+  el.innerHTML=l.map(t=>`<button class="tab" role="tab" data-tab="${t[0]}" aria-selected="${t[0]===tab}">${t[1]}</button>`).join('');
+}
+function renderOasis(){
+  const has=!!S.own;
+  $('#view').innerHTML=`<div class="hero"><h2>Основать город</h2>
+    <p>${has?`У вас уже есть город — ${esc(S.own.name)}. Второй основать нельзя.`:`Постройте здесь свой город за ${fmt(FOUND)} золотых. Он будет приносить доход каждый день, а вы сможете строить базар, мастерскую, стены и медресе.`}</p>
+    ${has?'':`<button class="b main" data-act="found" ${S.gold>=FOUND?'':'disabled'} style="margin-top:6px;padding:12px">${S.gold>=FOUND?'Основать город · '+fmt(FOUND):'Нужно '+fmt(FOUND)+' золотых'}</button>`}</div>`;
+}
+function sellPrice(g){const p=S.prices[g];return isOwn(S.city)&&S.own.b.bazaar?p:Math.round(p*.9)}
+function renderMarket(){
+  if(isEmptyOasis(S.city))return renderOasis();
+  const p=S.prices, free=cap()-load();
+  let h='<div class="goods">';
+  GOODS.forEach(g=>{
+    const buy=p[g.id], sell=sellPrice(g.id), have=S.cargo[g.id]||0, r=buy/g.b;
+    const tag=r<.8?'<span class="tag cheap">дёшево</span>':r>1.25?'<span class="tag dear">дорого</span>':'';
+    const canBuy=free>=g.s&&S.gold>=buy;
+    h+=`<div class="good">
+      <div class="gi">${ico(ICON[g.id])}</div>
+      <div class="name">${g.n}${tag}<div class="have num">В караване: ${have}${g.s>1?` · ${g.s} места`:''}</div></div>
+      <div class="prices num"><span>купить</span><b>${buy}</b><span>продать</span><b class="sp">${sell}</b></div>
+      <div class="btnrow">
+        <button class="b buy" data-act="buy" data-g="${g.id}" data-q="1" ${canBuy?'':'disabled'}>+1</button>
+        <button class="b buy" data-act="buy" data-g="${g.id}" data-q="999" ${canBuy?'':'disabled'}>Купить всё</button>
+        <button class="b sell" data-act="sell" data-g="${g.id}" data-q="1" ${have?'':'disabled'}>−1</button>
+        <button class="b sell" data-act="sell" data-g="${g.id}" data-q="999" ${have?'':'disabled'}>Продать всё</button>
+      </div></div>`;
+  });
+  h+=`</div><p class="hint" style="margin-top:10px">Цель — состояние ${fmt(GOAL)} золотых. Средние цены: ${GOODS.map(g=>g.n+' '+g.b).join(' · ')}.</p>`;
+  $('#view').innerHTML=h;
+}
+function renderTown(){
+  accrue();
+  const o=S.own, up=800*o.lvl;
+  let h=`<div class="cards"><div class="hero"><h2>${esc(o.name)}</h2><p>${LEVELS[o.lvl-1]} в ${CITIES[o.site].n.replace('Оазис ','оазисе ')}.</p>
+   <div class="kv"><div><b class="num">${fmt(o.treasury)}</b><span>Казна</span></div><div><b class="num">${income()}</b><span>В день</span></div><div><b class="num">${o.lvl}/5</b><span>Уровень</span></div></div>
+   <button class="b main" data-act="collect" ${o.treasury>0?'':'disabled'} style="margin-top:6px;padding:11px">Забрать казну</button></div>
+   <div class="card"><div class="ci">${ico(UI.dome)}</div><h3>Расширить город</h3><p>${o.lvl<5?`${LEVELS[o.lvl-1]} → ${LEVELS[o.lvl]}. Доход +15 в день.`:'Ваш город уже столица.'}</p>
+   <div class="act"><button class="b main" data-act="grow" ${o.lvl<5&&S.gold>=up?'':'disabled'}>${o.lvl<5?'Строить · '+fmt(up):'Максимум'}</button></div></div>`;
+  Object.entries(BUILD).forEach(([k,b])=>{const done=!!o.b[k];
+    const d=k==='workshop'&&done?`Делает: ${G(o.b.workshop).n.toLowerCase()} вдвое дешевле.`:b.d;
+    h+=`<div class="card ${done?'done':''}"><div class="ci">${ico(TOWNI[k])}</div><h3>${b.n}</h3><p>${d}</p><div class="act">
+     <button class="b main" data-act="build" data-k="${k}" ${!done&&S.gold>=b.c?'':'disabled'}>${done?'Построено':'Строить · '+fmt(b.c)}</button></div></div>`});
+  h+='</div>';
+  $('#view').innerHTML=h;
+}
+function hireCost(){return isOwn(S.city)&&S.own.b.inn?30:50}
+function renderInn(){
+  const camelCost=60+S.camels*25, w=S.weapon, hc=hireCost();
+  const items=[
+    {t:'Верблюд',d:`+10 мест для груза. Сейчас ${S.camels} верблюдов.`,b:`Купить · ${camelCost}`,act:'camel',ok:S.gold>=camelCost&&S.camels<25},
+    {t:'Наёмник',d:`Жалованье ${WAGE} золотых в день пути. Сейчас ${S.guards}.`,b:`Нанять · ${hc}`,act:'hire',ok:S.gold>=hc&&S.guards<40,b2:'Уволить',act2:'fire',ok2:S.guards>0},
+    {t:'Оружие охраны',d:w<3?`Сейчас: ${WEAPONS[w]}. Дальше: ${WEAPONS[w+1]}.`:`Лучшее: ${WEAPONS[w]}.`,b:w<3?`Улучшить · ${WEAPON_COST[w]}`:'Максимум',act:'weapon',ok:w<3&&S.gold>=WEAPON_COST[w]},
+    {t:'Проводник',d:'Путь на день короче, бандиты находят реже.',b:S.guide?'Нанят':'Нанять · 250',act:'guide',ok:!S.guide&&S.gold>=250},
+    {t:'Подкуп стражи',d:S.wanted?'Снять розыск полностью.':'Вас никто не ищет.',b:`Заплатить · ${S.wanted*80}`,act:'bribe',ok:S.wanted>0&&S.gold>=S.wanted*80}
+  ];
+  let h=`<div class="cards"><div class="power"><span>Сила каравана<small>${S.guards} наёмн. · ${WEAPONS[S.weapon].toLowerCase()}</small></span><b class="num">${power().toFixed(1)}</b></div>`;
+  items.forEach(i=>{h+=`<div class="card"><div class="ci">${ico(INNI[i.act])}</div><h3>${i.t}</h3><p>${i.d}</p><div class="act">
+    <button class="b main" data-act="${i.act}" ${i.ok?'':'disabled'}>${i.b}</button>
+    ${i.b2?`<button class="b ghost" data-act="${i.act2}" ${i.ok2?'':'disabled'}>${i.b2}</button>`:''}</div></div>`});
+  h+=`<button class="b ghost" data-act="reset" style="margin-top:8px;padding:10px">Начать игру заново</button></div>`;
+  $('#view').innerHTML=h;
+}
+function routeDanger(a,b,d){return (S.own&&S.own.b.walls&&(isOwn(a)||isOwn(b)))?d*.5:d}
+function neighbors(c){return ROUTES.filter(r=>r[0]===c||r[1]===c).map(r=>({to:r[0]===c?r[1]:r[0],days:Math.max(1,r[2]-(S.guide?1:0)),danger:routeDanger(r[0],r[1],r[3])}))}
+function pathTo(from,to){
+  const dist={},prev={},done={};Object.keys(CITIES).forEach(c=>dist[c]=Infinity);dist[from]=0;
+  for(;;){let u=null;for(const c in dist)if(!done[c]&&dist[c]<Infinity&&(u===null||dist[c]<dist[u]))u=c;
+    if(u===null||u===to)break;done[u]=true;
+    neighbors(u).forEach(n=>{const nd=dist[u]+n.days;if(nd<dist[n.to]){dist[n.to]=nd;prev[n.to]={from:u,leg:n}}})}
+  if(dist[to]===Infinity)return null;
+  const legs=[];let c=to;while(c!==from){legs.unshift({from:prev[c].from,...prev[c].leg});c=prev[c].from}
+  return {legs,days:dist[to],danger:Math.max(...legs.map(l=>l.danger)),via:legs.slice(0,-1).map(l=>l.to)};
+}
+function dangerLabel(d){return d<.2?['Тихая дорога','danger1']:d<.35?['Бывают бандиты','danger2']:['Опасная дорога','danger3']}
+
+/* old chart */
+function hash(i){const x=Math.sin(i*127.1)*43758.5453;return x-Math.floor(x)}
+function mountains(x0,y0,x1,y1,n,seed){let s='';for(let i=0;i<n;i++){const t=i/(n-1),x=x0+(x1-x0)*t+(hash(seed+i)-.5)*8,y=y0+(y1-y0)*t+(hash(seed+i+50)-.5)*8,h=9+hash(seed+i+90)*7;
+  s+=`<path d="M${x-7} ${y}L${x} ${y-h}L${x+7} ${y}" fill="var(--parch2)" stroke="var(--ink)" stroke-width="1"/><path d="M${x} ${y-h}L${x+3} ${y}" stroke="var(--ink2)" stroke-width=".7"/>`}return s}
+function dunes(cx,cy,rx,ry,n,seed){let s='';for(let i=0;i<n;i++){const x=cx+(hash(seed+i)-.5)*rx*2,y=cy+(hash(seed+i+30)-.5)*ry*2;
+  s+=`<path d="M${x-5} ${y}q5 -4 10 0" fill="none" stroke="var(--ink2)" stroke-width=".8" opacity=".6"/>`}return s}
+function cityIcon(x,y,col){return `<g transform="translate(${x} ${y})"><path d="M-7 0v-6a7 7 0 0 1 14 0v6z" fill="${col}" stroke="var(--ink)" stroke-width="1"/>
+  <rect x="8" y="-14" width="3" height="14" fill="${col}" stroke="var(--ink)" stroke-width=".8"/><path d="M7.5 -14l2 -3l2 3z" fill="var(--ink)"/><rect x="-9" y="0" width="22" height="2" fill="var(--ink)"/></g>`}
+function oasisIcon(x,y){return `<g transform="translate(${x} ${y})"><ellipse cx="0" cy="1" rx="9" ry="3.5" fill="var(--water)" opacity=".7"/>
+  <path d="M0 0v-12M0 -12q-6 -1 -8 3M0 -12q6 -1 8 3M0 -12q-3 -4 -7 -4M0 -12q3 -4 7 -4" stroke="#3d6b3a" stroke-width="1.6" fill="none"/></g>`}
+function flagIcon(x,y){return `<g transform="translate(${x} ${y})"><path d="M-1 -26v14" stroke="var(--ink)" stroke-width="1.2"/><path d="M-1 -26h11l-3 3.5l3 3.5h-11z" fill="var(--cinnabar)"/></g>`}
+function renderMap(){
+  const nb=neighbors(S.city), nbIds=nb.map(n=>n.to);
+  let s=`<svg viewBox="0 0 900 330" role="img" aria-label="Старинная карта Шёлкового пути">
+  <defs><radialGradient id="pg" cx="50%" cy="50%" r="70%"><stop offset="60%" stop-color="var(--parch)"/><stop offset="100%" stop-color="var(--parch2)"/></radialGradient></defs>
+  <rect width="900" height="330" fill="url(#pg)"/>
+  <rect x="6" y="6" width="888" height="318" fill="none" stroke="var(--ink)" stroke-width="2"/>
+  <rect x="11" y="11" width="878" height="308" fill="none" stroke="var(--ink2)" stroke-width=".8" stroke-dasharray="1 3"/>
+  ${[[11,11],[889,11],[11,319],[889,319]].map(([x,y])=>`<path d="M${x} ${y-7}L${x+7} ${y}L${x} ${y+7}L${x-7} ${y}Z" fill="var(--cinnabar)" stroke="var(--ink)" stroke-width=".8"/>`).join('')}
+  <!-- seas -->
+  <path d="M70 40q30 -10 45 20q12 40 -5 75q-10 25 -30 15q-20 -30 -15 -60q-5 -30 5 -50z" fill="var(--water)" opacity=".45" stroke="var(--ink2)" stroke-width="1"/>
+  <text x="88" y="98" fill="var(--ink2)" font-size="10.5" font-style="italic" font-family="Philosopher,Georgia,serif" text-anchor="middle" transform="rotate(-75 88 98)">Хвалынское море</text>
+  <ellipse cx="212" cy="50" rx="28" ry="20" fill="var(--water)" opacity=".45" stroke="var(--ink2)"/>
+  <text x="212" y="54" fill="var(--ink2)" font-size="10" font-style="italic" font-family="Philosopher,Georgia,serif" text-anchor="middle">Арал</text>
+  <!-- rivers -->
+  <path d="M470 235Q420 240 375 248Q330 235 300 200Q270 140 236 100Q225 80 214 68" fill="none" stroke="var(--water)" stroke-width="2.2"/>
+  <text x="282" y="122" fill="var(--water)" font-size="10" font-style="italic" font-family="Philosopher,Georgia,serif" transform="rotate(55 282 122)">Джейхун</text>
+  <path d="M480 120Q440 130 410 118Q380 100 330 80Q280 62 238 52" fill="none" stroke="var(--water)" stroke-width="2"/>
+  <text x="318" y="72" fill="var(--water)" font-size="10" font-style="italic" font-family="Philosopher,Georgia,serif" transform="rotate(18 318 72)">Сейхун</text>
+  <path d="M790 120Q800 160 815 195Q835 230 900 228" fill="none" stroke="var(--water)" stroke-width="2"/>
+  <text x="852" y="222" fill="var(--water)" font-size="10" font-style="italic" font-family="Philosopher,Georgia,serif">Хуанхэ</text>
+  <!-- deserts -->
+  ${dunes(240,150,40,30,14,1)}<text x="200" y="168" fill="var(--ink2)" font-size="11" font-style="italic" font-family="Philosopher,Georgia,serif" letter-spacing="2">Каракумы</text>
+  ${dunes(300,105,35,18,10,40)}<text x="282" y="110" fill="var(--ink2)" font-size="11" font-style="italic" font-family="Philosopher,Georgia,serif" letter-spacing="2">Кызылкум</text>
+  ${dunes(640,205,60,28,20,80)}<text x="612" y="214" fill="var(--ink2)" font-size="12" font-style="italic" font-family="Philosopher,Georgia,serif" letter-spacing="3">Такла-Макан</text>
+  ${dunes(760,95,40,16,10,120)}<text x="742" y="88" fill="var(--ink2)" font-size="11" font-style="italic" font-family="Philosopher,Georgia,serif" letter-spacing="2">Гоби</text>
+  <!-- mountains -->
+  ${mountains(470,108,640,128,14,200)}<text x="545" y="148" fill="var(--ink)" font-size="10.5" font-family="Philosopher,Georgia,serif" letter-spacing="3">ТЯНЬ-ШАНЬ</text>
+  ${mountains(445,195,500,255,7,300)}<text x="455" y="282" fill="var(--ink)" font-size="10.5" font-family="Philosopher,Georgia,serif" letter-spacing="3">ПАМИР</text>
+  ${mountains(170,262,250,262,6,400)}${mountains(650,285,780,285,10,500)}<text x="690" y="306" fill="var(--ink)" font-size="10" font-family="Philosopher,Georgia,serif" letter-spacing="3">КУНЬЛУНЬ</text>
+  <!-- cartouche -->
+  <g transform="translate(560 34)"><path d="M-120 -16h240l10 16l-10 16h-240l-10 -16z" fill="var(--parch)" stroke="var(--ink)" stroke-width="1.4"/>
+   <path d="M-114 -11h228l7 11l-7 11h-228l-7 -11z" fill="none" stroke="var(--cinnabar)" stroke-width=".8"/>
+   <text y="5" text-anchor="middle" fill="var(--ink)" font-size="15" font-family="Philosopher,Georgia,serif" font-weight="700" letter-spacing="1">Великий Шёлковый путь</text></g>
+  <!-- compass -->
+  <g transform="translate(110 290)"><circle r="20" fill="none" stroke="var(--ink)" stroke-width="1"/><circle r="15" fill="none" stroke="var(--ink2)" stroke-width=".6" stroke-dasharray="2 2"/>
+   <path d="M0 -24L5 0L0 24L-5 0Z" fill="var(--cinnabar)" stroke="var(--ink)" stroke-width=".7"/><path d="M-24 0L0 -5L24 0L0 5Z" fill="var(--parch2)" stroke="var(--ink)" stroke-width=".7"/>
+   <text y="-27" text-anchor="middle" fill="var(--ink)" font-size="9" font-family="Philosopher,Georgia,serif">С</text></g>`;
+  ROUTES.forEach(r=>{const a=CITIES[r[0]],b=CITIES[r[1]],on=(r[0]===S.city||r[1]===S.city);
+    s+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${on?'var(--cinnabar)':'var(--ink2)'}" stroke-width="${on?2.6:1.3}" stroke-dasharray="${on?'7 3':'3 4'}" stroke-linecap="round"/>`});
+  Object.entries(CITIES).forEach(([id,c])=>{const cur=id===S.city,nbr=nbIds.includes(id);
+    const col=cur?'var(--saffron)':nbr?'#e8c37a':'var(--parch2)';
+    const icon=(c.oasis&&!isOwn(id))?oasisIcon(c.x,c.y):cityIcon(c.x,c.y,col)+(isOwn(id)?flagIcon(c.x,c.y):'');
+    const name=esc(cityName(id));
+    s+=`<g class="city-dot" data-to="${nbr?id:''}"><circle cx="${c.x}" cy="${c.y-4}" r="20" fill="transparent"/>
+      ${cur?`<circle cx="${c.x+1}" cy="${c.y-4}" r="15" fill="none" stroke="var(--cinnabar)" stroke-width="1.6" stroke-dasharray="3 2"/>`:''}${icon}
+      <text x="${c.x+2}" y="${c.y+15}" text-anchor="middle" fill="${cur?'var(--cinnabar)':'var(--ink)'}" font-size="${c.oasis&&!isOwn(id)?10.5:12.5}" font-weight="${cur?700:400}" font-style="${c.oasis&&!isOwn(id)?'italic':'normal'}" font-family="Philosopher,Georgia,serif" paint-order="stroke" stroke="var(--parch)" stroke-width="3">${name}</text></g>`});
+  s+='</svg>';
+  let h=`<div class="mapscroll" id="ms">${s}</div><p class="maphint">Карту можно листать вбок. Нажмите на соседний город, чтобы отправиться.</p><div class="orn" style="margin:10px 0 8px">◆</div><div class="routes">`;
+  nb.forEach(n=>{const [dl,dc]=dangerLabel(n.danger),wage=n.days*S.guards*WAGE;
+    h+=`<button class="route" data-act="travel" data-to="${n.to}"><b>${esc(cityName(n.to))}</b>
+      <span class="meta">${n.days} дн. · <span class="${dc}">${dl}</span> · жалованье ${wage}</span><span class="go">В путь</span></button>`});
+  h+='</div>';
+  $('#view').innerHTML=h;
+  const ms=$('#ms');requestAnimationFrame(()=>{ms.scrollLeft=CITIES[S.city].x/900*ms.scrollWidth-ms.clientWidth/2});
+}
+function render(){
+  accrue();
+  if(!S.prices&&!isEmptyOasis(S.city))S.prices=genPrices(S.city);
+  renderStats();renderCity();renderTabs();
+  ({market:renderMarket,town:renderTown,inn:renderInn,map:renderMap})[tab]();
+}
+
+/* ---------- ui helpers ---------- */
+let toastT;
+function toast(msg){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)}
+  t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
+function ask(title,text,buttons,input){
+  return new Promise(res=>{
+    const l=$('#layer');
+    l.innerHTML=`<div class="overlay"><div class="sheet"><h2>${title}</h2>${text?`<p>${text}</p>`:''}${input?`<input id="askin" maxlength="20" placeholder="${input}" autocomplete="off">`:''}<div class="btns">${
+      buttons.map((b,i)=>`<button class="b ${b.cls||'main'}" data-i="${i}" ${b.off?'disabled':''}>${b.t}</button>`).join('')}</div></div></div>`;
+    l.querySelectorAll('[data-i]').forEach(btn=>btn.onclick=()=>{const v=buttons[+btn.dataset.i].v,txt=input?$('#askin').value.trim():null;l.innerHTML='';res(input?{v,txt}:v)});
+    const f=input?$('#askin'):l.querySelector('[data-i]:not([disabled])');f&&f.focus();
+  });
+}
+
+/* ---------- actions ---------- */
+function buy(g,q){const p=S.prices[g],sz=G(g).s;q=Math.min(q,Math.floor((cap()-load())/sz),Math.floor(S.gold/p));
+  if(q<=0)return toast(cap()-load()<sz?'Нет места. Купите верблюда.':'Не хватает золота.');
+  S.gold-=p*q;S.cargo[g]=(S.cargo[g]||0)+q;toast(`Куплено: ${q} × ${G(g).n}`)}
+function sell(g,q){const p=sellPrice(g),have=S.cargo[g]||0;q=Math.min(q,have);if(q<=0)return;
+  S.cargo[g]=have-q;S.gold+=p*q;toast(`Продано на ${fmt(p*q)} золотых`)}
+async function act(a,el){
+  if(busy)return;
+  const g=el.dataset.g,q=+el.dataset.q;
+  switch(a){
+    case 'buy':buy(g,q);break;
+    case 'sell':sell(g,q);break;
+    case 'camel':{const c=60+S.camels*25;S.gold-=c;S.camels++;toast('Новый верблюд в караване');break}
+    case 'hire':S.gold-=hireCost();S.guards++;toast('Наёмник присоединился');break;
+    case 'fire':S.guards--;toast('Наёмник ушёл');break;
+    case 'weapon':S.gold-=WEAPON_COST[S.weapon];S.weapon++;toast('Охрана получила: '+WEAPONS[S.weapon]);break;
+    case 'guide':S.gold-=250;S.guide=true;toast('Проводник нанят');break;
+    case 'bribe':S.gold-=S.wanted*80;S.wanted=0;toast('Стража забыла ваше имя');break;
+    case 'found':{
+      const r=await ask('Новый город','Как назовёте свой город?',[{t:'Основать · '+fmt(FOUND),v:1},{t:'Отмена',v:0,cls:'ghost'}],'Например, Новый Афрасиаб');
+      if(r.v&&S.gold>=FOUND){const name=(r.txt||'Новый город').slice(0,20);
+        S.gold-=FOUND;S.own={site:S.city,name,lvl:1,b:{},treasury:0,last:S.day};S.prices=genPrices(S.city);tab='town';
+        toast(`Город ${name} основан!`)}break}
+    case 'collect':S.gold+=S.own.treasury;toast(`В караван добавлено ${fmt(S.own.treasury)} золотых`);S.own.treasury=0;break;
+    case 'grow':S.gold-=800*S.own.lvl;S.own.lvl++;toast(`${S.own.name} теперь ${LEVELS[S.own.lvl-1].toLowerCase()}`);break;
+    case 'build':{const k=el.dataset.k,b=BUILD[k];
+      if(k==='workshop'){const opts=GOODS.filter(x=>x.id!=='horse').map(x=>({t:x.n,v:x.id,cls:'ghost'}));
+        const v=await ask('Что будет делать мастерская?','Этот товар в вашем городе будет вдвое дешевле.',opts.concat([{t:'Отмена',v:0}]));
+        if(!v)break;S.own.b.workshop=v}else S.own.b[k]=true;
+      S.gold-=b.c;S.prices=genPrices(S.city);toast(`Построено: ${b.n}`);break}
+    case 'reset':{const v=await ask('Начать заново?','Весь прогресс пропадёт.',[{t:'Да, заново',v:1},{t:'Отмена',v:0,cls:'ghost'}]);
+      if(v){newGame();tab='market'}break}
+    case 'travel':await travel(el.dataset.to);return;
+  }
+  save();render();checkWin();
+}
+
+/* ---------- travel ---------- */
+function cargoValue(){return GOODS.reduce((a,g)=>a+(S.cargo[g.id]||0)*g.b,0)}
+function camelSvg(){return `<svg class="camel" viewBox="0 0 20 16"><path fill="var(--sand)" d="M2 8c1-3 3-4 5-2 1-3 4-3 5 0 1-1 2-1 3 0l2-3 2 1-2 3v3h-1v4h-1v-4H6v4H5v-4H4v4H3V9z"/></svg>`}
+async function travel(to){
+  const r=neighbors(S.city).find(n=>n.to===to); if(!r)return;
+  const wage=r.days*S.guards*WAGE;
+  if(S.gold<wage){await ask('Не хватает на жалованье',`Охране нужно ${wage} золотых за дорогу. Продайте товар или увольте часть наёмников.`,[{t:'Понятно',v:0}]);return}
+  busy=true;S.gold-=wage;accrue();
+  let bandit=r.danger*(S.guide?.7:1)*(S.wanted>=3?.5:1)+Math.min(.2,cargoValue()/6000);
+  const ev=[];
+  if(Math.random()<bandit)ev.push('bandits');
+  if(Math.random()<.35)ev.push('caravan');
+  if(Math.random()<.12)ev.push('storm');
+  ev.sort(()=>Math.random()-.5);
+  let total=r.days; const at={};
+  ev.forEach((e,i)=>{const d=Math.min(total,1+Math.floor((i+1)*total/(ev.length+1)));(at[d]=at[d]||[]).push(e)});
+  const from=cityName(S.city);
+  const l=$('#layer');
+  const drawTrip=()=>{l.innerHTML=`<div class="overlay"><div class="sheet"><h2>${esc(from)} → ${esc(cityName(to))}</h2>
+    <p id="tripday" class="num"></p><div class="track"><div class="camels" id="cm">${camelSvg()+camelSvg()+camelSvg()}</div></div>
+    <div class="journal" id="jr"></div></div></div>`};
+  const journal=[];
+  let d=0;
+  const upd=()=>{const td=$('#tripday'),cm=$('#cm'),jr=$('#jr');if(!td)return;
+    td.textContent=`День пути ${d} из ${total}`;cm.style.left=`calc(${Math.min(100,d/total*100)}% - ${d/total*69}px)`;
+    jr.innerHTML=journal.slice(-4).map(j=>`<div>${j}</div>`).join('')};
+  drawTrip();upd();
+  for(d=1;d<=total;d++){
+    S.day++;await sleep(420);upd();
+    for(const e of (at[d]||[])){
+      const res=await handleEvent(e,r.danger);
+      if(res==='storm'){total++;journal.push('Песчаная буря задержала караван')}
+      else if(res)journal.push(res);
+      drawTrip();upd();
+    }
+  }
+  if(!journal.length)journal.push('Дорога прошла спокойно');
+  upd();await sleep(450);
+  S.city=to;S.prices=isEmptyOasis(to)?null:genPrices(to);accrue();
+  l.innerHTML='';
+  if(CITIES[to].strict&&S.wanted>=3){
+    const fine=S.wanted*60;
+    if(S.gold>=fine){S.gold-=fine;S.wanted=Math.max(0,S.wanted-2);
+      await ask('Стража у ворот',`Вас узнали. Штраф ${fine} золотых, розыск снижен.`,[{t:'Заплатить',v:1}])}
+    else{S.cargo={};S.wanted=Math.max(0,S.wanted-1);
+      await ask('Стража у ворот','Вас узнали, а платить нечем. Весь груз конфискован.',[{t:'Горько…',v:1}])}
+  }
+  let extra='';if(isOwn(to)&&S.own.treasury>0)extra=` В казне города ${fmt(S.own.treasury)} золотых.`;
+  await ask(esc(cityName(to)),`Караван прибыл. ${journal.join('. ')}.${extra}`,[{t:isEmptyOasis(to)?'Осмотреть оазис':isOwn(to)?'В мой город':'На базар',v:1}]);
+  busy=false;tab=isOwn(to)?'town':'market';save();render();checkWin();
+}
+async function handleEvent(e,danger){
+  if(e==='storm'){
+    const big=GOODS.map(g=>[g.id,S.cargo[g.id]||0]).sort((a,b)=>b[1]-a[1])[0];
+    const lost=Math.ceil(big[1]*.1);if(lost)S.cargo[big[0]]-=lost;
+    await ask('Песчаная буря','Караван переждал бурю, путь стал на день длиннее.'+(lost?` Пропало: ${lost} × ${G(big[0]).n}.`:''),[{t:'Идти дальше',v:1}]);
+    return 'storm';
+  }
+  if(e==='bandits'){
+    const B=Math.max(1,Math.round((1.5+S.day*.08)*danger*4*rnd(.6,1.4)));
+    const pay=Math.round(Math.max(20,S.gold*.25));
+    const v=await ask('Бандиты!',`Из-за барханов выехали разбойники. Их сила: ${B}. Сила вашего каравана: ${power().toFixed(1)}.`,
+      [{t:'Сражаться',v:'fight'},{t:`Откупиться · ${pay}`,v:'pay',cls:'ghost',off:S.gold<pay}]);
+    if(v==='pay'){S.gold-=pay;return `Откупились от бандитов за ${pay}`}
+    const win=await battle(power(),B,'Бандиты');
+    if(win){const loot=B*25+ri(0,40);S.gold+=loot;let lost=0;if(S.guards&&Math.random()<.3){S.guards--;lost=1}
+      return `Разбили бандитов, добыча ${loot}`+(lost?', погиб 1 наёмник':'')}
+    GOODS.forEach(g=>{if(S.cargo[g.id])S.cargo[g.id]=Math.floor(S.cargo[g.id]/2)});
+    const gl=Math.ceil(S.guards*.3);S.guards-=gl;const gg=Math.round(S.gold*.2);S.gold-=gg;
+    return `Бандиты отобрали половину груза и ${gg} золотых`+(gl?`, погибло наёмников: ${gl}`:'');
+  }
+  if(e==='caravan'){
+    const C=1+ri(0,Math.floor(2+S.day/15));
+    const v=await ask('Встречный караван',`Купеческий караван идёт навстречу. Его охрана: ${C}. Ваша сила: ${power().toFixed(1)}. Напасть — значит стать разыскиваемым.`,
+      [{t:'Пройти мимо',v:'pass',cls:'ghost'},{t:'Напасть',v:'attack'}]);
+    if(v==='pass')return null;
+    S.wanted=Math.min(5,S.wanted+1);S.robbed++;
+    const win=await battle(power(),C,'Охрана каравана');
+    if(win){const g=GOODS[ri(0,GOODS.length-2)],q=Math.min(Math.floor((cap()-load())/g.s),ri(3,10)),gold=C*30+ri(0,50);
+      S.gold+=gold;if(q>0)S.cargo[g.id]=(S.cargo[g.id]||0)+q;
+      return `Ограбили караван: ${gold} золотых`+(q>0?` и ${q} × ${g.n}`:'')}
+    const gl=Math.ceil(S.guards*.4);S.guards-=gl;const gg=Math.round(S.gold*.1);S.gold-=gg;
+    return `Нападение отбили, потеряли ${gg} золотых`+(gl?` и ${gl} наёмников`:'');
+  }
+}
+async function battle(P,B,foe){
+  const win=Math.random()<Math.pow(P,1.3)/(Math.pow(P,1.3)+Math.pow(B,1.3));
+  const l=$('#layer');
+  l.innerHTML=`<div class="overlay"><div class="sheet"><h2>Бой</h2>
+   <div class="vs"><div class="you"><b class="num">${P.toFixed(1)}</b><div>Ваш караван</div></div><div>против</div><div class="foe"><b class="num">${B}</b><div>${foe}</div></div></div>
+   <div class="bar"><i id="hp1" style="width:100%"></i></div><div class="bar foe"><i id="hp2" style="width:100%"></i></div>
+   <div class="journal" id="bl"></div><div id="res"></div></div></div>`;
+  let a=100,b=100;const lines=['Звенят сабли','Летят стрелы','Верблюды ревут','Пыль закрыла солнце','Последний натиск'];
+  for(let i=0;i<5;i++){await sleep(520);
+    const hitA=rnd(8,22)*(win?.7:1.3), hitB=rnd(8,22)*(win?1.3:.7);
+    a=Math.max(win?15:0,a-hitA);b=Math.max(win?0:15,b-hitB);if(i===4){if(win)b=0;else a=0}
+    $('#hp1').style.width=a+'%';$('#hp2').style.width=b+'%';
+    $('#bl').innerHTML+=`<div>${lines[i]}</div>`}
+  await sleep(300);
+  $('#res').innerHTML=`<div class="result ${win?'win':'lose'}">${win?'Победа!':'Поражение'}</div>`;
+  await sleep(900);
+  return win;
+}
+async function checkWin(){
+  if(!S.won&&worth()>=GOAL){S.won=true;save();
+    await ask('Великий купец!',`На ${S.day}-й день ваше состояние достигло ${fmt(worth())} золотых. Вас знают от Багдада до Чанъаня. Можно продолжать.`,[{t:'Продолжить',v:1}]);render()}
+}
+
+/* ---------- wiring ---------- */
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t||busy)return;tab=t.dataset.tab;render()});
+$('#view').addEventListener('click',e=>{
+  const dot=e.target.closest('.city-dot');
+  if(dot&&dot.dataset.to){act('travel',dot);return}
+  const b=e.target.closest('[data-act]');if(b&&!b.disabled)act(b.dataset.act,b)});
+
+const saved=restore();
+if(saved){S=saved;render()}
+else{newGame();render();
+  ask('Караван','Вы — бедный торговец из Хивы: 2 верблюда, 1 наёмник и 300 золотых. Дорога ведёт от Багдада до Чанъаня. Покупайте дёшево, продавайте дорого, нанимайте охрану, а разбогатев — основайте свой город в оазисе. Цель — 10 000 золотых.',[{t:'В путь!',v:1}])}
+</script>
+<script>
+try{const t=window.Telegram&&Telegram.WebApp;if(t){t.ready();t.expand();t.setHeaderColor&&t.setHeaderColor('#0a1430');t.setBackgroundColor&&t.setBackgroundColor('#0a1430')}}catch(e){}
+</script>
+</body>
+</html>
