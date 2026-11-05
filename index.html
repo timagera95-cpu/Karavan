@@ -93,13 +93,13 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--turq);outline-o
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:3px 10px 3px 5px;border-radius:99px;background:var(--panel);border:1px solid var(--line)}
 .chip .ico{width:18px;height:18px}
-.chip.cg{border-color:rgba(134,212,143,.45);color:var(--green)}
-.chip.cd{border-color:rgba(232,180,74,.5);color:var(--gold)}
+.chip.good{border-color:rgba(134,212,143,.45);color:var(--green)}
+.chip.dear{border-color:rgba(232,180,74,.5);color:var(--gold)}
 .chip.warn{border-color:rgba(236,107,85,.5);color:var(--red);padding-left:10px}
 .chip.plain{padding-left:10px;color:var(--muted)}
 .chip.goldc{color:#24170a;background:var(--gold);border-color:var(--gold);padding-left:10px;font-weight:600}
 .legend{display:flex;gap:14px;font-size:12px;color:var(--muted)}
-.legend .lg{color:var(--green)} .legend .ld{color:var(--gold)}
+.legend .good{color:var(--green)} .legend .dear{color:var(--gold)}
 
 /* tabs */
 .tabs{display:grid;gap:6px;border-bottom:2px solid var(--gold2);padding-top:2px}
@@ -189,9 +189,36 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--turq);outline-o
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--panel2);border:1px solid var(--gold2);color:var(--fg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 32px);text-align:center}
 @media (max-width:370px){.stat span{font-size:9px}.stat .ico{width:18px;height:18px}.logo{font-size:28px}}
 @media (prefers-reduced-motion: reduce){.camels,.bar i{transition:none}}
-</style>
-
-</head>
+.pill{cursor:default}
+button.pill{cursor:pointer}
+.ci{grid-row:1/4}
+.card .act{grid-row:1/4}
+.card h3 .lvl{font-family:var(--body);font-size:12px;font-weight:600;color:var(--turq);background:var(--bg);border-radius:99px;padding:1px 7px;vertical-align:3px}
+.card p .meta{font-size:12.5px;color:var(--sand)}
+.card p .nx{color:var(--green)}
+.upbar{grid-column:2;height:5px;border-radius:99px;background:var(--bg);overflow:hidden;margin-top:6px}
+.upbar i{display:block;height:100%;min-width:3px;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+.lzi{display:inline-block;width:15px;height:15px;vertical-align:-3px}
+.b .lzi{width:14px;height:14px}
+.job{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--gold2);border-radius:12px;padding:10px 12px}
+.job > .ico{width:28px;height:28px;flex:none}
+.job > div{flex:1;min-width:0}
+.job b{display:block}
+.job span{font-size:13px;color:var(--muted)}
+.job .cdn{display:inline;color:var(--gold)}
+.sheet .txt{color:var(--muted)}
+.achlist{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.ach{display:grid;grid-template-columns:30px 1fr auto;gap:0 10px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--panel2)}
+.ach > .ico{width:26px;height:26px;grid-row:1/3}
+.ach b{color:var(--fg);font-size:15px}
+.ach span{grid-column:2;font-size:12.5px}
+.ach em{grid-row:1/3;grid-column:3;font-style:normal;font-size:13px;color:var(--fg);white-space:nowrap}
+.ach.lock{opacity:.55}
+.tleft{font-size:30px;font-weight:600;color:var(--gold);text-align:center;font-family:var(--display)}
+.tprog{height:8px;border-radius:99px;background:var(--panel2);overflow:hidden}
+.tprog i{display:block;height:100%;background:linear-gradient(90deg,var(--turq2),var(--turq));transition:width .5s linear}
+.toast.ach{border-color:var(--gold);background:linear-gradient(180deg,#2a2a50,var(--panel2));color:var(--gold)}
+</style></head>
 <body>
 <div class="app" id="app">
   <header class="head"><div class="logo">Караван<small>Великий Шёлковый путь</small></div><div class="daybox" id="daybox"></div></header>
@@ -201,7 +228,6 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--turq);outline-o
   <main id="view"></main>
 </div>
 <div id="layer"></div>
-
 <script>
 const GOODS=[
  {id:'salt',n:'Соль',b:8,s:1},{id:'cotton',n:'Хлопок',b:12,s:1},{id:'fruit',n:'Сухофрукты',b:20,s:1},
@@ -232,8 +258,6 @@ const ROUTES=[['baghdad','nishapur',6,.35],['nishapur','merv',3,.25],['merv','kh
  ['termez','balkh',1,.2],['merv','balkh',4,.35],['tashkent','kokand',2,.15],['kokand','kashgar',4,.35],['balkh','kashgar',7,.45],
  ['kashgar','khotan',4,.3],['kashgar','turfan',6,.35],['khotan','oasis2',3,.4],['oasis2','dunhuang',3,.4],['khotan','dunhuang',6,.45],
  ['turfan','dunhuang',4,.3],['dunhuang','lanzhou',4,.25],['lanzhou','changan',3,.15]];
-const WEAPONS=['Дубины','Сабли','Луки и сабли','Кольчуги и копья'];
-const WEAPON_COST=[150,400,900];
 const LEVELS=['Посёлок','Городок','Город','Большой город','Столица'];
 const BUILD={
  bazaar:{n:'Базар',c:600,d:'Продаёте товар без скидки купцам: цена продажи равна цене покупки.'},
@@ -241,8 +265,6 @@ const BUILD={
  workshop:{n:'Мастерская',c:900,d:'Выбранный товар в вашем городе стоит вдвое дешевле.'},
  walls:{n:'Крепостные стены',c:700,d:'Бандиты вдвое реже нападают на дорогах к вашему городу.'},
  madrasa:{n:'Медресе',c:1200,d:'Слава города: +30 золотых в казну каждый день.'}};
-const WAGE=2, GOAL=10000, FOUND=2000, KEY='karavan-v1';
-let S, tab='market', busy=false;
 const ICON={
  salt:'<path d="M3 19h18l-4.5-7-2.5 2.5L11 9l-3.5 5L6 13z" fill="#eef2f5"/><path d="M3 19.5h18" stroke="#9fb3c8" stroke-width="1.5"/>',
  cotton:'<path d="M12 21v-6" stroke="#6f8f3c" stroke-width="1.6"/><path d="M8 18l4-2.5 4 2.5" stroke="#6f8f3c" stroke-width="1.4" fill="none"/><circle cx="8.6" cy="10.5" r="3.4" fill="#fff"/><circle cx="15.4" cy="10.5" r="3.4" fill="#fff"/><circle cx="12" cy="7" r="3.6" fill="#fff"/><circle cx="12" cy="12" r="3" fill="#ece6d8"/>',
@@ -266,17 +288,13 @@ const UI={
  box:'<path d="M3 8l9-4 9 4v9l-9 4-9-4z" fill="#b07a45"/><path d="M3 8l9 4 9-4M12 12v9" stroke="#6b4a2a" stroke-width="1.3" fill="none"/>',
  dome:'<path d="M5 20.5V12h14v8.5z" fill="#2c4485"/><path d="M5 12c0-5 3-8 7-9 4 1 7 4 7 9z" fill="#3fc1b0"/><path d="M12 3V1" stroke="#e8b44a" stroke-width="1.6"/><path d="M10 20.5v-4a2 2 0 0 1 4 0v4z" fill="#0a1430"/>',
  tower:'<path d="M4 21V9l2-2 2 2v3h8V9l2-2 2 2v12z" fill="#cfa86b"/><path d="M10 21v-4a2 2 0 0 1 4 0v4z" fill="#0a1430"/><path d="M4 9h4M16 9h4" stroke="#8a5a2b" stroke-width="1.2"/>',
+ laz:'<path d="M12 2.5l8 6.5-8 12.5-8-12.5z" fill="#2f5bd3"/><path d="M4 9h16l-8 12.5z" fill="#1f3f9e"/><path d="M8 9l4-6.5 4 6.5z" fill="#6b93f5"/><circle cx="10" cy="12.5" r=".9" fill="#e8b44a"/><circle cx="14.2" cy="14.5" r=".7" fill="#e8b44a"/>',
+ trophy:'<path d="M7 3.5h10v5a5 5 0 0 1-10 0z" fill="#e8b44a"/><path d="M7 5.5H4a3.5 3.5 0 0 0 3.5 4.5M17 5.5h3a3.5 3.5 0 0 1-3.5 4.5" stroke="#e8b44a" stroke-width="1.6" fill="none"/><path d="M10.8 13.4h2.4v4h-2.4z" fill="#b8862c"/><path d="M7.5 20.5h9v-3h-9z" fill="#b8862c"/>',
+ hour:'<path d="M6 3h12M6 21h12" stroke="#cfa86b" stroke-width="1.8"/><path d="M7 3c0 5 5 6 5 9s-5 4-5 9h10c0-5-5-6-5-9s5-4 5-9z" fill="#3fc1b0" opacity=".85"/>',
+ lock:'<rect x="5" y="10" width="14" height="11" rx="2" fill="#2c4485"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#a6b3d6" stroke-width="1.8" fill="none"/>',
  star:'<path d="M12 3l2.6 5.9 6.4.6-4.8 4.3 1.4 6.3L12 16.9 6.4 20.1l1.4-6.3L3 9.5l6.4-.6z" fill="currentColor"/>'
 };
 const ico=(inner,cls='')=>`<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
-let AD=null;
-const AD_BLOCK='57702', AD_WAIT=120000;
-function initAds(){try{if(window.Adsgram)AD=window.Adsgram.init({blockId:AD_BLOCK})}catch(e){AD=null}}
-const adsReady=()=>!!AD;
-const adReward=()=>Math.min(500,100+S.day*4);
-function showAd(){return new Promise(res=>{if(!AD)return res(false);try{AD.show().then(r=>res(!(r&&r.done===false))).catch(()=>res(false))}catch(e){res(false)}})}
-const INNI={ad:UI.coin,camel:UI.camel,hire:UI.sword,weapon:UI.shield,guide:UI.compass,bribe:UI.coin};
-const TOWNI={bazaar:UI.coin,inn:UI.camel,workshop:UI.box,walls:UI.tower,madrasa:UI.dome};
 function skyline(id){
   const own=isOwn(id), oasis=CITIES[id].oasis&&!own;
   let h0=7;for(const ch of id)h0=(h0*31+ch.charCodeAt(0))%100000;
@@ -320,66 +338,140 @@ function skyline(id){
   }
   return s+`<rect y="${B-1}" width="360" height="31" fill="${SIL}"/></svg>`;
 }
+const XRATE=5000, WAGE=3, FOUND=2000, KEY='karavan-v1', MAXL=1000, DAY_MS=60000, HIRE=50;
+const AD_BLOCK='57702', AD_WAIT=60000;
+const NCITIES=Object.values(CITIES).filter(c=>!c.oasis).length;
+let S, tab='market', busy=false, AD=null;
 
 const $=s=>document.querySelector(s);
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const ri=(a,b)=>Math.floor(rnd(a,b+1));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const fmt=n=>Math.round(n).toLocaleString('ru-RU');
+const fmtL=t=>(t/10).toFixed(1).replace('.',',');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const G=id=>GOODS.find(g=>g.id===id);
-const cap=()=>S.camels*10;
+function fmtDur(ms){let s=Math.max(0,Math.ceil(ms/1000));if(s<60)return s+' с';const m=Math.floor(s/60);s%=60;if(m<60)return m+' мин'+(s?' '+s+' с':'');
+  const h=Math.floor(m/60);if(h<24)return h+' ч'+(m%60?' '+(m%60)+' мин':'');const d=Math.floor(h/24);return d+' д'+(h%24?' '+(h%24)+' ч':'')}
+
+/* ---------- upgrades ---------- */
+const capAt=L=>20+5*(L-1);
+const armsAt=L=>1+.05*(L-1);
+const speedAt=L=>1+.01*(L-1);
+const sellAt=L=>.8+.19*(1-1/(1+.03*(L-1)));
+const upCost=L=>Math.round(40*Math.pow(L,1.6));
+const upTime=L=>3000*L*L;
+const bazCost=L=>Math.max(1,L);
+const upLaz=L=>L<10?0:Math.ceil(L/10);
+const rushCost=end=>Math.max(1,Math.ceil((end-Date.now())/180000));
+const UPG={
+ cap:{n:'Вьюки и верблюды',icon:'camel',e:L=>`${fmt(capAt(L))} мест груза`},
+ arms:{n:'Оружие охраны',icon:'shield',e:L=>`сила наёмника ×${armsAt(L).toFixed(2)}`},
+ guide:{n:'Проводники',icon:'compass',e:L=>`день пути ${fmtDur(DAY_MS/speedAt(L))}`},
+ trade:{n:'Красноречие',icon:'coin',e:L=>`продажа ${Math.round(sellAt(L)*100)}% цены`}};
+const tripMs=days=>Math.round(days*DAY_MS/speedAt(S.up.guide));
+const cap=()=>capAt(S.up.cap);
 const load=()=>GOODS.reduce((a,g)=>a+(S.cargo[g.id]||0)*g.s,0);
-const power=()=>1+S.guards*(1+.5*S.weapon);
-const worth=()=>S.gold+GOODS.reduce((a,g)=>a+(S.cargo[g.id]||0)*g.b,0)+(S.own?S.own.lvl*1000:0);
+const power=()=>1+S.guards*armsAt(S.up.arms);
+const worth=()=>S.gold+GOODS.reduce((a,g)=>a+(S.cargo[g.id]||0)*g.b,0);
 const isOwn=c=>S.own&&S.own.site===c;
 const cityName=c=>isOwn(c)?S.own.name:CITIES[c].n;
 const isEmptyOasis=c=>CITIES[c].oasis&&!isOwn(c);
+const maxUp=()=>Math.max(...Object.values(S.up),S.own?S.own.baz:1);
+const visitedCount=()=>Object.keys(S.st.visited).filter(c=>CITIES[c]&&!CITIES[c].oasis).length;
+function addLaz(t){S.laz+=t;S.st.lazGot+=t}
 
+/* ---------- achievements ---------- */
+const ACH=[
+ ['deal','Первая сделка','Продайте любой товар',()=>S.st.sold>=1,1],
+ ['trip1','В путь!','Совершите первое путешествие',()=>S.st.trips>=1,1],
+ ['win1','Первая победа','Победите бандитов',()=>S.st.wins>=1,1],
+ ['laz','Синий камень','Получите первый лазурит',()=>S.st.lazGot>=10,1],
+ ['v5','Путешественник','Побывайте в 5 городах',()=>visitedCount()>=5,2],
+ ['u10','Мастер','Прокачайте любое улучшение до 10 уровня',()=>maxUp()>=10,2],
+ ['rob1','Разбойник','Ограбьте чужой караван',()=>S.robbed>=1,1],
+ ['rich','Тугой кошелёк','Накопите 10 000 золота',()=>S.gold>=1e4,5],
+ ['found','Основатель','Основайте свой город',()=>!!S.own,5],
+ ['china','До края земли','Доберитесь до Чанъаня',()=>!!S.st.visited.changan,5],
+ ['guards20','Своя армия','Наймите 20 наёмников',()=>S.guards>=20,5],
+ ['ads10','Друг купцов','Посмотрите 10 реклам',()=>S.st.ads>=10,5],
+ ['trader','Торговец','Продайте 500 единиц товара',()=>S.st.sold>=500,5],
+ ['d100','Сто дней в пути','Проживите 100 дней',()=>S.day>=100,10],
+ ['trip50','Бывалый караванщик','Совершите 50 путешествий',()=>S.st.trips>=50,10],
+ ['win25','Гроза пустыни','Победите бандитов 25 раз',()=>S.st.wins>=25,10],
+ ['rob15','Главарь','Ограбьте 15 караванов',()=>S.robbed>=15,10],
+ ['silk','Шёлковый король','Продайте 300 шёлка',()=>S.st.silk>=300,10],
+ ['vall','Весь Шёлковый путь',`Побывайте во всех ${NCITIES} городах`,()=>visitedCount()>=NCITIES,20],
+ ['u100','Великий мастер','Прокачайте улучшение до 100 уровня',()=>maxUp()>=100,20],
+ ['rich2','Казна халифа','Накопите 1 000 000 золота',()=>S.gold>=1e6,50],
+ ['u1000','Легенда','Прокачайте улучшение до 1000 уровня',()=>maxUp()>=1000,200]];
+function checkAch(){
+  const got=[];
+  ACH.forEach(([id,n,,ok,r])=>{if(!S.ach[id]&&ok()){S.ach[id]=S.day;addLaz(r);got.push(`${n} (+${fmtL(r)})`)}});
+  if(got.length){save();renderStats();toast('Достижение: '+got.join(', '),'ach')}
+}
+function openAch(){
+  if(busy)return;
+  const done=ACH.filter(a=>S.ach[a[0]]).length;
+  const list=ACH.map(([id,n,d,,r])=>{const ok=!!S.ach[id];
+    return `<div class="ach ${ok?'':'lock'}">${ico(ok?UI.trophy:UI.lock)}<b>${n}</b><span>${d}</span><em>${ico(UI.laz,'lzi')} ${fmtL(r)}</em></div>`}).join('');
+  ask(`Достижения · ${done}/${ACH.length}`,`<div class="achlist">${list}</div>`,[{t:'Закрыть',v:0,cls:'ghost'}]);
+}
+
+/* ---------- state ---------- */
 function mults(c){
   if(isOwn(c)){const m={};GOODS.forEach(g=>m[g.id]=1.05);if(S.own.b.workshop)m[S.own.b.workshop]=.5;return m}
   return CITIES[c].m||{};
 }
 function genPrices(c){const p={},m=mults(c);GOODS.forEach(g=>{p[g.id]=Math.max(3,Math.round(g.b*(m[g.id]||1)*rnd(.85,1.15)))});return p}
-function newGame(){S={gold:300,day:1,city:'khiva',camels:2,guards:1,weapon:0,guide:false,wanted:0,robbed:0,won:false,cargo:{},prices:{},own:null};S.prices=genPrices('khiva');save()}
+function newGame(){S={v:3,gold:200,laz:0,day:1,city:'khiva',guards:1,wanted:0,robbed:0,cargo:{},prices:null,own:null,
+  up:{cap:1,arms:1,guide:1,trade:1},job:null,trip:null,ach:{},adAt:0,
+  st:{sold:0,earned:0,trips:0,wins:0,ads:0,silk:0,lazGot:0,visited:{khiva:1}}};S.prices=genPrices('khiva');save()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function restore(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.city){
-  if(!CITIES[s.city])s.city='khiva';if(s.own===undefined)s.own=null;s.cargo=s.cargo||{};
-  if(!s.prices||GOODS.some(g=>!s.prices[g.id]))s.prices=null;return s}}catch(e){}return null}
+function migrate(s){
+  if(!CITIES[s.city])s.city='khiva';
+  s.cargo=s.cargo||{};s.own=s.own||null;s.guards=s.guards||0;s.wanted=s.wanted||0;s.robbed=s.robbed||0;
+  if(!s.up){const cam=s.camels||2;s.up={cap:Math.max(1,Math.round((cam*10-20)/5)+1),arms:1+(s.weapon||0)*8,guide:s.guide?10:1,trade:1}}
+  s.laz=s.laz||0;s.ach=s.ach||{};s.job=s.job||null;s.trip=s.trip||null;s.adAt=s.adAt||0;
+  s.st=Object.assign({sold:0,earned:0,trips:0,wins:0,ads:0,silk:0,lazGot:0,visited:{}},s.st||{});s.st.visited[s.city]=1;
+  if(s.own){s.own.baz=s.own.baz||1;s.own.bjob=s.own.bjob||null}
+  if(!s.prices||GOODS.some(g=>!s.prices[g.id]))s.prices=null;
+  delete s.won;delete s.camels;delete s.weapon;delete s.guide;s.v=3;return s;
+}
+function restore(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.city)return migrate(s)}catch(e){}return null}
 
-/* own city economy */
 function income(){if(!S.own)return 0;const b=S.own.b;let n=0;['bazaar','inn','walls'].forEach(k=>{if(b[k])n++});if(b.workshop)n++;
-  return 15*S.own.lvl+10*n+(b.madrasa?30:0)}
+  return 15*S.own.lvl+10*n+(b.madrasa?30:0)+5*(S.own.baz-1)}
 function accrue(){if(!S.own)return;const d=S.day-S.own.last;if(d>0){S.own.treasury+=d*income();S.own.last=S.day}}
+function tickJobs(){
+  let changed=false;
+  if(S.job&&Date.now()>=S.job.end){S.up[S.job.k]++;toast(`${UPG[S.job.k].n}: уровень ${S.up[S.job.k]}`);S.job=null;changed=true}
+  if(S.own&&S.own.bjob&&Date.now()>=S.own.bjob.end){S.own.baz++;toast(`Базар города: уровень ${S.own.baz}`);S.own.bjob=null;changed=true}
+  if(changed){save();if(!busy)render();else renderStats();checkAch()}
+}
 
 function rank(){
   if(S.robbed>=15)return 'Главарь разбойников';
   if(S.robbed>=5)return 'Разбойник с большой дороги';
-  if(S.own&&S.own.lvl>=5)return 'Правитель столицы '+S.own.name;
-  if(S.own)return 'Хозяин города '+S.own.name;
+  if(S.own&&S.own.lvl>=5)return 'Правитель столицы';
+  if(S.own)return 'Хозяин города';
   const w=worth();
-  if(w>=GOAL)return 'Великий купец Шёлкового пути';
+  if(w>=1e6)return 'Легенда Шёлкового пути';
+  if(w>=2e4)return 'Великий купец';
   if(w>=5000)return 'Богатый купец';
   if(w>=1500)return 'Купец';
   return 'Бедный торговец';
 }
-function cityNote(c){
-  if(isEmptyOasis(c))return 'Пустой оазис: вода, пальмы и место для нового города.';
-  if(isOwn(c))return `${LEVELS[S.own.lvl-1]}, основан вами. Доход ${income()} золотых в день.`;
-  const m=CITIES[c].m;
-  const cheap=GOODS.filter(g=>(m[g.id]||1)<.85).map(g=>g.n.toLowerCase());
-  const dear=GOODS.filter(g=>(m[g.id]||1)>1.25).map(g=>g.n.toLowerCase());
-  return `Дёшево: ${cheap.join(', ')||'—'}. Дорого: ${dear.join(', ')||'—'}.`+(CITIES[c].strict?' Строгая стража.':'');
-}
 
 /* ---------- render ---------- */
 function renderStats(){
-  $('#daybox').innerHTML=`<span class="pill"><b class="num">${S.day}</b>день</span><span class="pill">${ico(UI.camel)}<b class="num">${S.camels}</b></span>`;
+  const done=ACH.filter(a=>S.ach[a[0]]).length;
+  $('#daybox').innerHTML=`<span class="pill" title="Лазурит">${ico(UI.laz)}<b class="num">${fmtL(S.laz)}</b></span><button class="pill" data-act="ach" aria-label="Достижения">${ico(UI.trophy)}<b class="num">${done}</b>/${ACH.length}</button>`;
   const pct=Math.min(100,load()/cap()*100);
   const stars=[0,1,2,3,4].map(i=>`<svg viewBox="0 0 24 24" class="st ${i<S.wanted?'on':''}" aria-hidden="true">${UI.star}</svg>`).join('');
   $('#stats').innerHTML=`
    <div class="stat gold">${ico(UI.coin)}<div><b class="num">${fmt(S.gold)}</b><span>золото</span></div></div>
-   <div class="stat">${ico(UI.box)}<div><b class="num">${load()}/${cap()}</b><div class="cbar ${pct>=100?'full':''}"><i style="width:${pct}%"></i></div></div></div>
+   <div class="stat">${ico(UI.box)}<div><b class="num">${load()}/${fmt(cap())}</b><div class="cbar ${pct>=100?'full':''}"><i style="width:${pct}%"></i></div></div></div>
    <div class="stat">${ico(UI.sword)}<div><b class="num">${power().toFixed(1)}</b><span>${S.guards} охр.</span></div></div>
    <div class="stat want"><div class="stars" aria-label="Розыск ${S.wanted} из 5">${stars}</div><span>розыск</span></div>`;
 }
@@ -392,29 +484,30 @@ function renderCity(){
     GOODS.filter(g=>(m[g.id]||1)>1.25).forEach(g=>chips+=`<span class="chip cd">${ico(ICON[g.id])}${g.n}</span>`);
     if(CITIES[c].strict)chips+='<span class="chip warn">Строгая стража</span>';
     legend='<div class="legend"><span class="lg">● дёшево здесь</span><span class="ld">● дорого здесь</span></div>'}
-  $('#city').innerHTML=`<div class="banner">${skyline(c)}<div class="bcap"><div class="rank">${esc(rank())}</div><h1>${esc(cityName(c))}</h1></div></div>${legend}<div class="chips">${chips}</div>`;
+  $('#city').innerHTML=`<div class="banner">${skyline(c)}<div class="bcap"><div class="rank">${esc(rank())} · день ${S.day}</div><h1>${esc(cityName(c))}</h1></div></div>${legend}<div class="chips">${chips}</div>`;
 }
 function tabList(){
-  if(isEmptyOasis(S.city))return [['market','Оазис'],['inn','Караван-сарай'],['map','В путь']];
-  if(isOwn(S.city))return [['market','Базар'],['town','Мой город'],['inn','Сарай'],['map','В путь']];
-  return [['market','Базар'],['inn','Караван-сарай'],['map','В путь']];
+  const l=[['market',isEmptyOasis(S.city)?'Оазис':'Базар']];
+  if(isOwn(S.city))l.push(['town','Город']);
+  l.push(['inn','Сарай'],['up','Прокачка'],['map','В путь']);return l;
 }
 function renderTabs(){
   const l=tabList();if(!l.some(t=>t[0]===tab))tab='market';
   const el=$('#tabs');el.style.gridTemplateColumns=`repeat(${l.length},1fr)`;
-  el.innerHTML=l.map(t=>`<button class="tab" role="tab" data-tab="${t[0]}" aria-selected="${t[0]===tab}">${t[1]}</button>`).join('');
+  el.innerHTML=l.map(t=>`<button class="tab" role="tab" data-tab="${t[0]}" aria-selected="${t[0]===tab}">${t[1]}${t[0]==='up'&&S.job?' ⏳':''}</button>`).join('');
 }
 function renderOasis(){
   const has=!!S.own;
   $('#view').innerHTML=`<div class="hero"><h2>Основать город</h2>
-    <p>${has?`У вас уже есть город — ${esc(S.own.name)}. Второй основать нельзя.`:`Постройте здесь свой город за ${fmt(FOUND)} золотых. Он будет приносить доход каждый день, а вы сможете строить базар, мастерскую, стены и медресе.`}</p>
+    <p>${has?`У вас уже есть город — ${esc(S.own.name)}. Второй основать нельзя.`:`Постройте здесь свой город за ${fmt(FOUND)} золотых. Он приносит доход каждый день пути, а его базар можно прокачивать за лазурит.`}</p>
     ${has?'':`<button class="b main" data-act="found" ${S.gold>=FOUND?'':'disabled'} style="margin-top:6px;padding:12px">${S.gold>=FOUND?'Основать город · '+fmt(FOUND):'Нужно '+fmt(FOUND)+' золотых'}</button>`}</div>`;
 }
-function sellPrice(g){const p=S.prices[g];return isOwn(S.city)&&S.own.b.bazaar?p:Math.round(p*.9)}
+function sellFactor(){return isOwn(S.city)&&S.own.b.bazaar?1:sellAt(S.up.trade)}
+function sellPrice(g){return Math.max(1,Math.round(S.prices[g]*sellFactor()))}
 function renderMarket(){
   if(isEmptyOasis(S.city))return renderOasis();
   const p=S.prices, free=cap()-load();
-  let h='<div class="goods">';
+  let h='<p class="hint" style="margin-bottom:8px">Цена меняется с каждой сделкой: чем больше продаёте здесь, тем дешевле, чем больше скупаете, тем дороже.</p><div class="goods">';
   GOODS.forEach(g=>{
     const buy=p[g.id], sell=sellPrice(g.id), have=S.cargo[g.id]||0, r=buy/g.b;
     const tag=r<.8?'<span class="tag cheap">дёшево</span>':r>1.25?'<span class="tag dear">дорого</span>':'';
@@ -425,62 +518,254 @@ function renderMarket(){
       <div class="prices num"><span>купить</span><b>${buy}</b><span>продать</span><b class="sp">${sell}</b></div>
       <div class="btnrow">
         <button class="b buy" data-act="buy" data-g="${g.id}" data-q="1" ${canBuy?'':'disabled'}>+1</button>
-        <button class="b buy" data-act="buy" data-g="${g.id}" data-q="999" ${canBuy?'':'disabled'}>Купить всё</button>
+        <button class="b buy" data-act="buy" data-g="${g.id}" data-q="10" ${canBuy?'':'disabled'}>+10</button>
         <button class="b sell" data-act="sell" data-g="${g.id}" data-q="1" ${have?'':'disabled'}>−1</button>
-        <button class="b sell" data-act="sell" data-g="${g.id}" data-q="999" ${have?'':'disabled'}>Продать всё</button>
+        <button class="b sell" data-act="sell" data-g="${g.id}" data-q="9999" ${have?'':'disabled'}>Продать всё</button>
       </div></div>`;
   });
-  h+=`</div><p class="hint" style="margin-top:10px">Цель — состояние ${fmt(GOAL)} золотых. Средние цены: ${GOODS.map(g=>g.n+' '+g.b).join(' · ')}.</p>`;
+  h+=`</div><p class="hint" style="margin-top:10px">Средние цены: ${GOODS.map(g=>g.n+' '+g.b).join(' · ')}.</p>`;
   $('#view').innerHTML=h;
+}
+function hireCost(){return isOwn(S.city)&&S.own.b.inn?30:HIRE}
+const cdSpan=end=>`<b class="cdn num" data-end="${end}">${fmtDur(end-Date.now())}</b>`;
+function renderInn(){
+  const hc=hireCost(), adLeft=(S.adAt||0)-Date.now();
+  let h=`<div class="cards"><div class="power"><span>Сила каравана<small>${S.guards} наёмн. × ${armsAt(S.up.arms).toFixed(2)}</small></span><b class="num">${power().toFixed(1)}</b></div>`;
+  if(adsReady())h+=`<div class="card"><div class="ci">${ico(UI.laz)}</div><h3>Помощь купцов</h3><p>Посмотрите короткую рекламу и получите 0,1 лазурита.</p>
+    <div class="act"><button class="b main" data-act="ad" ${adLeft>0?'disabled':''}>${adLeft>0?'Через '+cdSpan(S.adAt):'▶ Смотреть · +0,1'}</button></div></div>`;
+  h+=`<div class="card"><div class="ci">${ico(UI.laz)}</div><h3>Обмен на лазурит</h3><p>${fmt(XRATE)} золота = 1 лазурит. Лазурит нужен для прокачки с 10 уровня, базара вашего города и ускорения ожидания.${adsReady()?' Дешевле всего — смотреть рекламу.':''}</p>
+    <div class="act"><button class="b main" data-act="xchg" data-q="1" ${S.gold>=XRATE?'':'disabled'}>${fmt(XRATE)} → 1</button><button class="b ghost" data-act="xchg" data-q="10" ${S.gold>=XRATE*10?'':'disabled'}>${fmt(XRATE*10)} → 10</button></div></div>
+   <div class="card"><div class="ci">${ico(UI.sword)}</div><h3>Наёмник</h3><p>Жалованье ${WAGE} золота за каждый день пути. Сейчас ${S.guards}.</p>
+    <div class="act"><button class="b main" data-act="hire" ${S.gold>=hc&&S.guards<60?'':'disabled'}>Нанять · ${hc}</button><button class="b ghost" data-act="fire" ${S.guards>0?'':'disabled'}>Уволить</button></div></div>
+   <div class="card"><div class="ci">${ico(UI.coin)}</div><h3>Подкуп стражи</h3><p>${S.wanted?'Снять розыск полностью.':'Вас никто не ищет.'}</p>
+    <div class="act"><button class="b main" data-act="bribe" ${S.wanted>0&&S.gold>=S.wanted*100?'':'disabled'}>Заплатить · ${S.wanted*100}</button></div></div>
+   <button class="b ghost" data-act="reset" style="margin-top:8px;padding:10px">Начать игру заново</button></div>`;
+  $('#view').innerHTML=h;
+}
+function jobPanel(job,name,lvl,kind){
+  if(!job)return '';const rc=rushCost(job.end);
+  return `<div class="job">${ico(UI.hour)}<div><b>${name} → ур. ${lvl+1}</b><span>Осталось ${cdSpan(job.end)}</span></div>
+   <button class="b main" data-act="rush" data-k="${kind}" ${S.laz>=rc?'':'disabled'}>Ускорить · ${ico(UI.laz,'lzi')} ${fmtL(rc)}</button></div>`;
+}
+function renderUp(){
+  let h=`<div class="cards">${S.job?jobPanel(S.job,UPG[S.job.k].n,S.up[S.job.k],'cara'):'<p class="hint">Одновременно строится одно улучшение. Первые уровни — секунды, дальше часы и дни. С 10 уровня нужен ещё и лазурит. Максимум — 1000 уровень.</p>'}`;
+  Object.entries(UPG).forEach(([k,u])=>{const L=S.up[k],max=L>=MAXL,cost=upCost(L),lc=upLaz(L),active=S.job&&S.job.k===k;
+    h+=`<div class="card"><div class="ci">${ico(UI[u.icon])}</div><h3>${u.n} <small class="lvl">ур. ${L}</small></h3>
+     <p>${u.e(L)}${max?'':` → <span class="nx">${u.e(L+1)}</span>`}<br><span class="meta">${max?'Максимальный уровень':`${fmt(cost)} золота${lc?` + ${ico(UI.laz,'lzi')} ${fmtL(lc)}`:''} · ${ico(UI.hour,'lzi')} ${fmtDur(upTime(L))}`}</span></p>
+     <div class="upbar"><i style="width:${L/MAXL*100}%"></i></div>
+     <div class="act"><button class="b main" data-act="up" data-k="${k}" ${!max&&!S.job&&S.gold>=cost&&S.laz>=lc?'':'disabled'}>${active?'Строится':max?'Максимум':S.job?'Ждите':'Улучшить'}</button></div></div>`});
+  $('#view').innerHTML=h+'</div>';
 }
 function renderTown(){
   accrue();
-  const o=S.own, up=800*o.lvl;
+  const o=S.own, up=800*o.lvl, bc=bazCost(o.baz);
   let h=`<div class="cards"><div class="hero"><h2>${esc(o.name)}</h2><p>${LEVELS[o.lvl-1]} в ${CITIES[o.site].n.replace('Оазис ','оазисе ')}.</p>
-   <div class="kv"><div><b class="num">${fmt(o.treasury)}</b><span>Казна</span></div><div><b class="num">${income()}</b><span>В день</span></div><div><b class="num">${o.lvl}/5</b><span>Уровень</span></div></div>
+   <div class="kv"><div><b class="num">${fmt(o.treasury)}</b><span>Казна</span></div><div><b class="num">${income()}</b><span>В день</span></div><div><b class="num">${o.baz}</b><span>Базар</span></div></div>
    <button class="b main" data-act="collect" ${o.treasury>0?'':'disabled'} style="margin-top:6px;padding:11px">Забрать казну</button></div>
+   ${jobPanel(o.bjob,'Базар города',o.baz,'baz')}
+   <div class="card"><div class="ci">${ico(UI.laz)}</div><h3>Базар города <small class="lvl">ур. ${o.baz}</small></h3>
+    <p>Каждый уровень даёт +5 золота в казну за день.<br><span class="meta">${o.baz>=MAXL?'Максимальный уровень':`${ico(UI.laz,'lzi')} ${fmtL(bc)} лазурита · ${ico(UI.hour,'lzi')} ${fmtDur(upTime(o.baz))}`}</span></p>
+    <div class="upbar"><i style="width:${o.baz/MAXL*100}%"></i></div>
+    <div class="act"><button class="b main" data-act="baz" ${o.baz<MAXL&&!o.bjob&&S.laz>=bc?'':'disabled'}>${o.bjob?'Строится':'Улучшить'}</button></div></div>
    <div class="card"><div class="ci">${ico(UI.dome)}</div><h3>Расширить город</h3><p>${o.lvl<5?`${LEVELS[o.lvl-1]} → ${LEVELS[o.lvl]}. Доход +15 в день.`:'Ваш город уже столица.'}</p>
-   <div class="act"><button class="b main" data-act="grow" ${o.lvl<5&&S.gold>=up?'':'disabled'}>${o.lvl<5?'Строить · '+fmt(up):'Максимум'}</button></div></div>`;
+    <div class="act"><button class="b main" data-act="grow" ${o.lvl<5&&S.gold>=up?'':'disabled'}>${o.lvl<5?'Строить · '+fmt(up):'Максимум'}</button></div></div>`;
   Object.entries(BUILD).forEach(([k,b])=>{const done=!!o.b[k];
     const d=k==='workshop'&&done?`Делает: ${G(o.b.workshop).n.toLowerCase()} вдвое дешевле.`:b.d;
     h+=`<div class="card ${done?'done':''}"><div class="ci">${ico(TOWNI[k])}</div><h3>${b.n}</h3><p>${d}</p><div class="act">
      <button class="b main" data-act="build" data-k="${k}" ${!done&&S.gold>=b.c?'':'disabled'}>${done?'Построено':'Строить · '+fmt(b.c)}</button></div></div>`});
-  h+='</div>';
-  $('#view').innerHTML=h;
+  $('#view').innerHTML=h+'</div>';
 }
-function hireCost(){return isOwn(S.city)&&S.own.b.inn?30:50}
-function renderInn(){
-  const camelCost=60+S.camels*25, w=S.weapon, hc=hireCost();
-  const items=[
-    {t:'Верблюд',d:`+10 мест для груза. Сейчас ${S.camels} верблюдов.`,b:`Купить · ${camelCost}`,act:'camel',ok:S.gold>=camelCost&&S.camels<25},
-    {t:'Наёмник',d:`Жалованье ${WAGE} золотых в день пути. Сейчас ${S.guards}.`,b:`Нанять · ${hc}`,act:'hire',ok:S.gold>=hc&&S.guards<40,b2:'Уволить',act2:'fire',ok2:S.guards>0},
-    {t:'Оружие охраны',d:w<3?`Сейчас: ${WEAPONS[w]}. Дальше: ${WEAPONS[w+1]}.`:`Лучшее: ${WEAPONS[w]}.`,b:w<3?`Улучшить · ${WEAPON_COST[w]}`:'Максимум',act:'weapon',ok:w<3&&S.gold>=WEAPON_COST[w]},
-    {t:'Проводник',d:'Путь на день короче, бандиты находят реже.',b:S.guide?'Нанят':'Нанять · 250',act:'guide',ok:!S.guide&&S.gold>=250},
-    {t:'Подкуп стражи',d:S.wanted?'Снять розыск полностью.':'Вас никто не ищет.',b:`Заплатить · ${S.wanted*80}`,act:'bribe',ok:S.wanted>0&&S.gold>=S.wanted*80}
-  ];
-  if(adsReady()){const left=Math.ceil(((S.adAt||0)-Date.now())/60000);
-    items.unshift({t:'Помощь купцов',d:`Посмотрите короткую рекламу и получите ${adReward()} золотых.`,b:left>0?`Через ${left} мин`:`▶ Смотреть · +${adReward()}`,act:'ad',ok:left<=0})}
-  let h=`<div class="cards"><div class="power"><span>Сила каравана<small>${S.guards} наёмн. · ${WEAPONS[S.weapon].toLowerCase()}</small></span><b class="num">${power().toFixed(1)}</b></div>`;
-  items.forEach(i=>{h+=`<div class="card"><div class="ci">${ico(INNI[i.act])}</div><h3>${i.t}</h3><p>${i.d}</p><div class="act">
-    <button class="b main" data-act="${i.act}" ${i.ok?'':'disabled'}>${i.b}</button>
-    ${i.b2?`<button class="b ghost" data-act="${i.act2}" ${i.ok2?'':'disabled'}>${i.b2}</button>`:''}</div></div>`});
-  h+=`<button class="b ghost" data-act="reset" style="margin-top:8px;padding:10px">Начать игру заново</button></div>`;
-  $('#view').innerHTML=h;
-}
+const TOWNI={bazaar:UI.coin,inn:UI.camel,workshop:UI.box,walls:UI.tower,madrasa:UI.dome};
 function routeDanger(a,b,d){return (S.own&&S.own.b.walls&&(isOwn(a)||isOwn(b)))?d*.5:d}
-function neighbors(c){return ROUTES.filter(r=>r[0]===c||r[1]===c).map(r=>({to:r[0]===c?r[1]:r[0],days:Math.max(1,r[2]-(S.guide?1:0)),danger:routeDanger(r[0],r[1],r[3])}))}
-function pathTo(from,to){
-  const dist={},prev={},done={};Object.keys(CITIES).forEach(c=>dist[c]=Infinity);dist[from]=0;
-  for(;;){let u=null;for(const c in dist)if(!done[c]&&dist[c]<Infinity&&(u===null||dist[c]<dist[u]))u=c;
-    if(u===null||u===to)break;done[u]=true;
-    neighbors(u).forEach(n=>{const nd=dist[u]+n.days;if(nd<dist[n.to]){dist[n.to]=nd;prev[n.to]={from:u,leg:n}}})}
-  if(dist[to]===Infinity)return null;
-  const legs=[];let c=to;while(c!==from){legs.unshift({from:prev[c].from,...prev[c].leg});c=prev[c].from}
-  return {legs,days:dist[to],danger:Math.max(...legs.map(l=>l.danger)),via:legs.slice(0,-1).map(l=>l.to)};
-}
+function neighbors(c){return ROUTES.filter(r=>r[0]===c||r[1]===c).map(r=>({to:r[0]===c?r[1]:r[0],days:r[2],danger:routeDanger(r[0],r[1],r[3])}))}
 function dangerLabel(d){return d<.2?['Тихая дорога','danger1']:d<.35?['Бывают бандиты','danger2']:['Опасная дорога','danger3']}
+function render(){
+  accrue();
+  if(!S.prices&&!isEmptyOasis(S.city))S.prices=genPrices(S.city);
+  renderStats();renderCity();renderTabs();
+  ({market:renderMarket,town:renderTown,inn:renderInn,up:renderUp,map:renderMap})[tab]();
+}
+function updCountdowns(){document.querySelectorAll(".cdn").forEach(el=>{const left=+el.dataset.end-Date.now();el.textContent=fmtDur(left);
+  if(left<=0&&el.closest('[data-act="ad"]')&&!busy)render()})}
 
-/* old chart */
+/* ---------- ui helpers ---------- */
+let toastT;
+function toast(msg,kind){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)}
+  t.textContent=msg;t.className='toast'+(kind?' '+kind:'');t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,kind?3600:2200)}
+function ask(title,text,buttons,input){
+  return new Promise(res=>{
+    const l=$('#layer');
+    l.innerHTML=`<div class="overlay"><div class="sheet"><h2>${title}</h2>${text?`<div class="txt">${text}</div>`:''}${input?`<input id="askin" maxlength="20" placeholder="${input}" autocomplete="off">`:''}<div class="btns">${
+      buttons.map((b,i)=>`<button class="b ${b.cls||'main'}" data-i="${i}" ${b.off?'disabled':''}>${b.t}</button>`).join('')}</div></div></div>`;
+    l.querySelectorAll('[data-i]').forEach(btn=>btn.onclick=()=>{const v=buttons[+btn.dataset.i].v,txt=input?$('#askin').value.trim():null;l.innerHTML='';res(input?{v,txt}:v)});
+    const f=input?$('#askin'):l.querySelector('[data-i]:not([disabled])');f&&f.focus();
+  });
+}
+
+/* ---------- ads ---------- */
+function initAds(){try{if(window.Adsgram)AD=window.Adsgram.init({blockId:AD_BLOCK})}catch(e){AD=null}}
+const adsReady=()=>!!AD;
+function showAd(){return new Promise(res=>{if(!AD)return res(false);try{AD.show().then(r=>res(!(r&&r.done===false))).catch(()=>res(false))}catch(e){res(false)}})}
+
+/* ---------- actions ---------- */
+function buy(g,q){const sz=G(g).s;let n=0,spent=0;
+  while(n<q&&cap()-load()>=sz&&S.gold>=S.prices[g]){S.gold-=S.prices[g];spent+=S.prices[g];S.cargo[g]=(S.cargo[g]||0)+1;n++;S.prices[g]=Math.ceil(S.prices[g]*1.02)}
+  if(!n)return toast(cap()-load()<sz?'Нет места. Прокачайте вьюки.':'Не хватает золота.');
+  toast(`Куплено: ${n} × ${G(g).n} за ${fmt(spent)}`)}
+function sell(g,q){let n=0,got=0;const floor=Math.ceil(G(g).b*.3);
+  while(n<q&&(S.cargo[g]||0)>0){const p=sellPrice(g);S.gold+=p;got+=p;S.cargo[g]--;n++;S.prices[g]=Math.max(floor,Math.floor(S.prices[g]*.975))}
+  if(!n)return;S.st.sold+=n;S.st.earned+=got;if(g==='silk')S.st.silk+=n;toast(`Продано ${n} шт. на ${fmt(got)} золотых`)}
+async function act(a,el){
+  if(a==='ach')return openAch();
+  if(busy)return;
+  const g=el.dataset.g,q=+el.dataset.q,k=el.dataset.k;
+  switch(a){
+    case 'buy':buy(g,q);break;
+    case 'sell':sell(g,q);break;
+    case 'hire':S.gold-=hireCost();S.guards++;toast('Наёмник присоединился');break;
+    case 'fire':S.guards--;toast('Наёмник ушёл');break;
+    case 'bribe':S.gold-=S.wanted*100;S.wanted=0;toast('Стража забыла ваше имя');break;
+    case 'xchg':if(S.gold>=q*XRATE){S.gold-=q*XRATE;addLaz(q*10);toast(`Получено ${q} лазурита`)}break;
+    case 'ad':{busy=true;const ok=await showAd();busy=false;
+      if(ok){addLaz(1);S.st.ads++;S.adAt=Date.now()+AD_WAIT;toast('Купцы подарили 0,1 лазурита')}
+      else toast('Реклама не досмотрена или сейчас недоступна');break}
+    case 'up':{const L=S.up[k];if(S.job||L>=MAXL||S.gold<upCost(L)||S.laz<upLaz(L))break;S.gold-=upCost(L);S.laz-=upLaz(L);S.job={k,end:Date.now()+upTime(L)};toast(`Началось улучшение: ${UPG[k].n}`);break}
+    case 'baz':{const o=S.own,c=bazCost(o.baz);if(o.bjob||S.laz<c)break;S.laz-=c;o.bjob={end:Date.now()+upTime(o.baz)};toast('Базар расширяется');break}
+    case 'rush':{const job=k==='baz'?S.own.bjob:S.job;if(!job)break;const c=rushCost(job.end);if(S.laz<c)break;S.laz-=c;job.end=Date.now();tickJobs();break}
+    case 'found':{
+      const r=await ask('Новый город','Как назовёте свой город?',[{t:'Основать · '+fmt(FOUND),v:1},{t:'Отмена',v:0,cls:'ghost'}],'Например, Новый Афрасиаб');
+      if(r.v&&S.gold>=FOUND){const name=(r.txt||'Новый город').slice(0,20);
+        S.gold-=FOUND;S.own={site:S.city,name,lvl:1,b:{},treasury:0,last:S.day,baz:1,bjob:null};S.prices=genPrices(S.city);tab='town';toast(`Город ${name} основан!`)}break}
+    case 'collect':S.gold+=S.own.treasury;toast(`В караван добавлено ${fmt(S.own.treasury)} золотых`);S.own.treasury=0;break;
+    case 'grow':S.gold-=800*S.own.lvl;S.own.lvl++;toast(`${S.own.name} теперь ${LEVELS[S.own.lvl-1].toLowerCase()}`);break;
+    case 'build':{const b=BUILD[k];
+      if(k==='workshop'){const opts=GOODS.filter(x=>x.id!=='horse').map(x=>({t:x.n,v:x.id,cls:'ghost'}));
+        const v=await ask('Что будет делать мастерская?','Этот товар в вашем городе будет вдвое дешевле.',opts.concat([{t:'Отмена',v:0}]));
+        if(!v)break;S.own.b.workshop=v}else S.own.b[k]=true;
+      S.gold-=b.c;S.prices=genPrices(S.city);toast(`Построено: ${b.n}`);break}
+    case 'reset':{const v=await ask('Начать заново?','Весь прогресс и достижения пропадут.',[{t:'Да, заново',v:1},{t:'Отмена',v:0,cls:'ghost'}]);
+      if(v){newGame();tab='market'}break}
+    case 'travel':startTrip(el.dataset.to);return;
+  }
+  save();render();checkAch();
+}
+
+/* ---------- travel (real time) ---------- */
+function cargoValue(){return GOODS.reduce((a,g)=>a+(S.cargo[g.id]||0)*g.b,0)}
+function camelSvg(){return `<svg class="camel" viewBox="0 0 20 16"><path fill="var(--sand)" d="M2 8c1-3 3-4 5-2 1-3 4-3 5 0 1-1 2-1 3 0l2-3 2 1-2 3v3h-1v4h-1v-4H6v4H5v-4H4v4H3V9z"/></svg>`}
+async function startTrip(to){
+  const r=neighbors(S.city).find(n=>n.to===to);if(!r)return;
+  const wage=r.days*S.guards*WAGE;
+  if(S.gold<wage){await ask('Не хватает на жалованье',`Охране нужно ${wage} золотых за дорогу. Продайте товар или увольте часть наёмников.`,[{t:'Понятно',v:0}]);return}
+  S.gold-=wage;accrue();
+  const gf=1/(1+.005*(S.up.guide-1));
+  const bandit=Math.min(.85,r.danger*1.3*gf*(S.wanted>=3?.6:1)+Math.min(.25,cargoValue()/5000));
+  const ev=[];
+  if(Math.random()<bandit)ev.push('bandits');
+  if(r.days>=3&&Math.random()<bandit*.5)ev.push('bandits');
+  if(Math.random()<.35)ev.push('caravan');
+  if(Math.random()<.15)ev.push('storm');
+  S.trip={from:S.city,to,start:Date.now(),dur:tripMs(r.days),days:r.days,startDay:S.day,danger:r.danger,
+    ev:ev.map(t=>({t,f:rnd(.12,.92),done:false})).sort((a,b)=>a.f-b.f),log:[]};
+  S.st.trips++;save();runTrip();
+}
+let tripTimer=null,tripBusy=false;
+const tripP=()=>Math.min(1,(Date.now()-S.trip.start)/S.trip.dur);
+function runTrip(){busy=true;drawTrip();clearInterval(tripTimer);tripTimer=setInterval(stepTrip,500);stepTrip()}
+function drawTrip(){
+  const t=S.trip;
+  $('#layer').innerHTML=`<div class="overlay"><div class="sheet"><h2>${esc(cityName(t.from))} → ${esc(cityName(t.to))}</h2>
+    <div class="tleft num" id="tleft"></div><p id="tday" class="num" style="text-align:center"></p>
+    <div class="track"><div class="camels" id="cm">${camelSvg()+camelSvg()+camelSvg()}</div></div>
+    <div class="tprog"><i id="tpi"></i></div>
+    <div class="journal" id="jr">${t.log.slice(-4).map(j=>`<div>${j}</div>`).join('')||'<div>Караван вышел в путь</div>'}</div>
+    <div class="btns"><button class="b main" id="rushTrip"></button></div></div></div>`;
+  $('#rushTrip').onclick=()=>{const c=rushCost(t.start+t.dur);if(S.laz<c)return toast('Не хватает лазурита');S.laz-=c;t.start=Date.now()-t.dur;save();renderStats();stepTrip()};
+  updTrip();
+}
+function updTrip(){
+  const t=S.trip;if(!t||!$('#tleft'))return;const p=tripP(),left=t.start+t.dur-Date.now();
+  $('#tleft').textContent=left>0?fmtDur(left):'Прибытие…';
+  $('#tday').textContent=`День пути ${Math.min(t.days,Math.floor(p*t.days)+1)} из ${t.days}`;
+  $('#cm').style.left=`calc(${p*100}% - ${p*69}px)`;$('#tpi').style.width=p*100+'%';
+  const rb=$('#rushTrip'),c=rushCost(t.start+t.dur);
+  if(left>0){rb.hidden=false;rb.disabled=S.laz<c;rb.innerHTML=`Ускорить · ${ico(UI.laz,'lzi')} ${fmtL(c)}`}else rb.hidden=true;
+}
+async function stepTrip(){
+  if(tripBusy||!S.trip)return;const t=S.trip,p=tripP();
+  S.day=t.startDay+Math.floor(p*t.days);updTrip();tickJobs();
+  const e=t.ev.find(e=>!e.done&&e.f<=p);
+  if(e){tripBusy=true;
+    const res=await handleEvent(e.t,t.danger);e.done=true;
+    if(res==='storm'){t.dur+=tripMs(1);t.days++;t.log.push('Песчаная буря задержала караван на день')}else if(res)t.log.push(res);
+    save();drawTrip();renderStats();tripBusy=false;checkAch();return}
+  if(p>=1&&t.ev.every(e=>e.done)){clearInterval(tripTimer);tripBusy=true;await arrive();tripBusy=false}
+}
+async function arrive(){
+  const t=S.trip,to=t.to;S.day=t.startDay+t.days;
+  S.city=to;S.st.visited[to]=1;S.prices=isEmptyOasis(to)?null:genPrices(to);accrue();S.trip=null;save();
+  $('#layer').innerHTML='';
+  if(CITIES[to].strict&&S.wanted>=3){
+    const fine=S.wanted*80;
+    if(S.gold>=fine){S.gold-=fine;S.wanted=Math.max(0,S.wanted-2);await ask('Стража у ворот',`Вас узнали. Штраф ${fine} золотых, розыск снижен.`,[{t:'Заплатить',v:1}])}
+    else{S.cargo={};S.wanted=Math.max(0,S.wanted-1);await ask('Стража у ворот','Вас узнали, а платить нечем. Весь груз конфискован.',[{t:'Горько…',v:1}])}
+  }
+  const log=t.log.length?t.log.join('. ')+'.':'Дорога прошла спокойно.';
+  const extra=isOwn(to)&&S.own.treasury>0?` В казне города ${fmt(S.own.treasury)} золотых.`:'';
+  await ask(esc(cityName(to)),`Караван прибыл. ${log}${extra}`,[{t:isEmptyOasis(to)?'Осмотреть оазис':isOwn(to)?'В мой город':'На базар',v:1}]);
+  busy=false;tab=isOwn(to)?'town':'market';save();render();checkAch();
+}
+async function handleEvent(e,danger){
+  if(e==='storm'){
+    const big=GOODS.map(g=>[g.id,S.cargo[g.id]||0]).sort((a,b)=>b[1]-a[1])[0];
+    const lost=Math.ceil(big[1]*.15);if(lost)S.cargo[big[0]]-=lost;
+    await ask('Песчаная буря','Караван переждал бурю, путь стал на день длиннее.'+(lost?` Пропало: ${lost} × ${G(big[0]).n}.`:''),[{t:'Идти дальше',v:1}]);
+    return 'storm';
+  }
+  if(e==='bandits'){
+    const B=Math.max(1,Math.round((2+S.day*.1)*danger*4.5*rnd(.7,1.5)));
+    const pay=Math.round(Math.max(30,S.gold*.3));
+    const v=await ask('Бандиты!',`Из-за барханов выехали разбойники. Их сила: ${B}. Сила вашего каравана: ${power().toFixed(1)}.`,
+      [{t:'Сражаться',v:'fight'},{t:`Откупиться · ${pay}`,v:'pay',cls:'ghost',off:S.gold<pay}].concat(adsReady()?[{t:'▶ Реклама: уйти без потерь',v:'ad',cls:'ghost'}]:[]));
+    if(v==='pay'){S.gold-=pay;return `Откупились от бандитов за ${pay}`}
+    if(v==='ad'){if(await showAd()){S.st.ads++;return 'Проводник увёл караван тайной тропой'}toast('Реклама не загрузилась — придётся драться')}
+    const win=await battle(power(),B,'Бандиты');
+    if(win){S.st.wins++;const loot=B*20+ri(0,30);S.gold+=loot;let lost=0;if(S.guards&&Math.random()<.4){S.guards--;lost=1}
+      return `Разбили бандитов, добыча ${loot}`+(lost?', погиб 1 наёмник':'')}
+    GOODS.forEach(g=>{if(S.cargo[g.id])S.cargo[g.id]=Math.floor(S.cargo[g.id]/2)});
+    const gl=Math.ceil(S.guards*.3);S.guards-=gl;const gg=Math.round(S.gold*.25);S.gold-=gg;
+    return `Бандиты отобрали половину груза и ${gg} золотых`+(gl?`, погибло наёмников: ${gl}`:'');
+  }
+  if(e==='caravan'){
+    const C=1+ri(0,Math.floor(2+S.day/10));
+    const v=await ask('Встречный караван',`Купеческий караван идёт навстречу. Его охрана: ${C}. Ваша сила: ${power().toFixed(1)}. Напасть — значит стать разыскиваемым.`,
+      [{t:'Пройти мимо',v:'pass',cls:'ghost'},{t:'Напасть',v:'attack'}]);
+    if(v==='pass')return null;
+    S.wanted=Math.min(5,S.wanted+1);S.robbed++;
+    const win=await battle(power(),C,'Охрана каравана');
+    if(win){const g=GOODS[ri(0,GOODS.length-2)],q=Math.min(Math.floor((cap()-load())/g.s),ri(3,10)),gold=C*25+ri(0,40);
+      S.gold+=gold;if(q>0)S.cargo[g.id]=(S.cargo[g.id]||0)+q;
+      return `Ограбили караван: ${gold} золотых`+(q>0?` и ${q} × ${g.n}`:'')}
+    const gl=Math.ceil(S.guards*.4);S.guards-=gl;const gg=Math.round(S.gold*.15);S.gold-=gg;
+    return `Нападение отбили, потеряли ${gg} золотых`+(gl?` и ${gl} наёмников`:'');
+  }
+}
+async function battle(P,B,foe){
+  const win=Math.random()<Math.pow(P,1.3)/(Math.pow(P,1.3)+Math.pow(B,1.3));
+  const l=$('#layer');
+  l.innerHTML=`<div class="overlay"><div class="sheet"><h2>Бой</h2>
+   <div class="vs"><div class="you"><b class="num">${P.toFixed(1)}</b><div>Ваш караван</div></div><div>против</div><div class="foe"><b class="num">${B}</b><div>${foe}</div></div></div>
+   <div class="bar"><i id="hp1" style="width:100%"></i></div><div class="bar foe"><i id="hp2" style="width:100%"></i></div>
+   <div class="journal" id="bl"></div><div id="res"></div></div></div>`;
+  let a=100,b=100;const lines=['Звенят сабли','Летят стрелы','Верблюды ревут','Пыль закрыла солнце','Последний натиск'];
+  for(let i=0;i<5;i++){await sleep(520);
+    const hitA=rnd(8,22)*(win?.7:1.3),hitB=rnd(8,22)*(win?1.3:.7);
+    a=Math.max(win?15:0,a-hitA);b=Math.max(win?0:15,b-hitB);if(i===4){if(win)b=0;else a=0}
+    $('#hp1').style.width=a+'%';$('#hp2').style.width=b+'%';$('#bl').innerHTML+=`<div>${lines[i]}</div>`}
+  await sleep(300);
+  $('#res').innerHTML=`<div class="result ${win?'win':'lose'}">${win?'Победа!':'Поражение'}</div>`;
+  await sleep(900);return win;
+}
 function hash(i){const x=Math.sin(i*127.1)*43758.5453;return x-Math.floor(x)}
 function mountains(x0,y0,x1,y1,n,seed){let s='';for(let i=0;i<n;i++){const t=i/(n-1),x=x0+(x1-x0)*t+(hash(seed+i)-.5)*8,y=y0+(y1-y0)*t+(hash(seed+i+50)-.5)*8,h=9+hash(seed+i+90)*7;
   s+=`<path d="M${x-7} ${y}L${x} ${y-h}L${x+7} ${y}" fill="var(--parch2)" stroke="var(--ink)" stroke-width="1"/><path d="M${x} ${y-h}L${x+3} ${y}" stroke="var(--ink2)" stroke-width=".7"/>`}return s}
@@ -541,193 +826,22 @@ function renderMap(){
   let h=`<div class="mapscroll" id="ms">${s}</div><p class="maphint">Карту можно листать вбок. Нажмите на соседний город, чтобы отправиться.</p><div class="orn" style="margin:10px 0 8px">◆</div><div class="routes">`;
   nb.forEach(n=>{const [dl,dc]=dangerLabel(n.danger),wage=n.days*S.guards*WAGE;
     h+=`<button class="route" data-act="travel" data-to="${n.to}"><b>${esc(cityName(n.to))}</b>
-      <span class="meta">${n.days} дн. · <span class="${dc}">${dl}</span> · жалованье ${wage}</span><span class="go">В путь</span></button>`});
+      <span class="meta">${n.days} дн. · ${ico(UI.hour,'lzi')} ${fmtDur(tripMs(n.days))} · <span class="${dc}">${dl}</span> · жалованье ${wage}</span><span class="go">В путь</span></button>`});
   h+='</div>';
   $('#view').innerHTML=h;
   const ms=$('#ms');requestAnimationFrame(()=>{ms.scrollLeft=CITIES[S.city].x/900*ms.scrollWidth-ms.clientWidth/2});
 }
-function render(){
-  accrue();
-  if(!S.prices&&!isEmptyOasis(S.city))S.prices=genPrices(S.city);
-  renderStats();renderCity();renderTabs();
-  ({market:renderMarket,town:renderTown,inn:renderInn,map:renderMap})[tab]();
-}
-
-/* ---------- ui helpers ---------- */
-let toastT;
-function toast(msg){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)}
-  t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
-function ask(title,text,buttons,input){
-  return new Promise(res=>{
-    const l=$('#layer');
-    l.innerHTML=`<div class="overlay"><div class="sheet"><h2>${title}</h2>${text?`<p>${text}</p>`:''}${input?`<input id="askin" maxlength="20" placeholder="${input}" autocomplete="off">`:''}<div class="btns">${
-      buttons.map((b,i)=>`<button class="b ${b.cls||'main'}" data-i="${i}" ${b.off?'disabled':''}>${b.t}</button>`).join('')}</div></div></div>`;
-    l.querySelectorAll('[data-i]').forEach(btn=>btn.onclick=()=>{const v=buttons[+btn.dataset.i].v,txt=input?$('#askin').value.trim():null;l.innerHTML='';res(input?{v,txt}:v)});
-    const f=input?$('#askin'):l.querySelector('[data-i]:not([disabled])');f&&f.focus();
-  });
-}
-
-/* ---------- actions ---------- */
-function buy(g,q){const p=S.prices[g],sz=G(g).s;q=Math.min(q,Math.floor((cap()-load())/sz),Math.floor(S.gold/p));
-  if(q<=0)return toast(cap()-load()<sz?'Нет места. Купите верблюда.':'Не хватает золота.');
-  S.gold-=p*q;S.cargo[g]=(S.cargo[g]||0)+q;toast(`Куплено: ${q} × ${G(g).n}`)}
-function sell(g,q){const p=sellPrice(g),have=S.cargo[g]||0;q=Math.min(q,have);if(q<=0)return;
-  S.cargo[g]=have-q;S.gold+=p*q;toast(`Продано на ${fmt(p*q)} золотых`)}
-async function act(a,el){
-  if(busy)return;
-  const g=el.dataset.g,q=+el.dataset.q;
-  switch(a){
-    case 'buy':buy(g,q);break;
-    case 'sell':sell(g,q);break;
-    case 'camel':{const c=60+S.camels*25;S.gold-=c;S.camels++;toast('Новый верблюд в караване');break}
-    case 'hire':S.gold-=hireCost();S.guards++;toast('Наёмник присоединился');break;
-    case 'fire':S.guards--;toast('Наёмник ушёл');break;
-    case 'weapon':S.gold-=WEAPON_COST[S.weapon];S.weapon++;toast('Охрана получила: '+WEAPONS[S.weapon]);break;
-    case 'guide':S.gold-=250;S.guide=true;toast('Проводник нанят');break;
-    case 'bribe':S.gold-=S.wanted*80;S.wanted=0;toast('Стража забыла ваше имя');break;
-    case 'found':{
-      const r=await ask('Новый город','Как назовёте свой город?',[{t:'Основать · '+fmt(FOUND),v:1},{t:'Отмена',v:0,cls:'ghost'}],'Например, Новый Афрасиаб');
-      if(r.v&&S.gold>=FOUND){const name=(r.txt||'Новый город').slice(0,20);
-        S.gold-=FOUND;S.own={site:S.city,name,lvl:1,b:{},treasury:0,last:S.day};S.prices=genPrices(S.city);tab='town';
-        toast(`Город ${name} основан!`)}break}
-    case 'collect':S.gold+=S.own.treasury;toast(`В караван добавлено ${fmt(S.own.treasury)} золотых`);S.own.treasury=0;break;
-    case 'grow':S.gold-=800*S.own.lvl;S.own.lvl++;toast(`${S.own.name} теперь ${LEVELS[S.own.lvl-1].toLowerCase()}`);break;
-    case 'build':{const k=el.dataset.k,b=BUILD[k];
-      if(k==='workshop'){const opts=GOODS.filter(x=>x.id!=='horse').map(x=>({t:x.n,v:x.id,cls:'ghost'}));
-        const v=await ask('Что будет делать мастерская?','Этот товар в вашем городе будет вдвое дешевле.',opts.concat([{t:'Отмена',v:0}]));
-        if(!v)break;S.own.b.workshop=v}else S.own.b[k]=true;
-      S.gold-=b.c;S.prices=genPrices(S.city);toast(`Построено: ${b.n}`);break}
-    case 'ad':{busy=true;const ok=await showAd();busy=false;
-      if(ok){const g=adReward();S.gold+=g;S.adAt=Date.now()+AD_WAIT;toast(`Купцы подарили ${g} золотых`)}
-      else toast('Реклама не досмотрена или сейчас недоступна');break}
-    case 'reset':{const v=await ask('Начать заново?','Весь прогресс пропадёт.',[{t:'Да, заново',v:1},{t:'Отмена',v:0,cls:'ghost'}]);
-      if(v){newGame();tab='market'}break}
-    case 'travel':await travel(el.dataset.to);return;
-  }
-  save();render();checkWin();
-}
-
-/* ---------- travel ---------- */
-function cargoValue(){return GOODS.reduce((a,g)=>a+(S.cargo[g.id]||0)*g.b,0)}
-function camelSvg(){return `<svg class="camel" viewBox="0 0 20 16"><path fill="var(--sand)" d="M2 8c1-3 3-4 5-2 1-3 4-3 5 0 1-1 2-1 3 0l2-3 2 1-2 3v3h-1v4h-1v-4H6v4H5v-4H4v4H3V9z"/></svg>`}
-async function travel(to){
-  const r=neighbors(S.city).find(n=>n.to===to); if(!r)return;
-  const wage=r.days*S.guards*WAGE;
-  if(S.gold<wage){await ask('Не хватает на жалованье',`Охране нужно ${wage} золотых за дорогу. Продайте товар или увольте часть наёмников.`,[{t:'Понятно',v:0}]);return}
-  busy=true;S.gold-=wage;accrue();
-  let bandit=r.danger*(S.guide?.7:1)*(S.wanted>=3?.5:1)+Math.min(.2,cargoValue()/6000);
-  const ev=[];
-  if(Math.random()<bandit)ev.push('bandits');
-  if(Math.random()<.35)ev.push('caravan');
-  if(Math.random()<.12)ev.push('storm');
-  ev.sort(()=>Math.random()-.5);
-  let total=r.days; const at={};
-  ev.forEach((e,i)=>{const d=Math.min(total,1+Math.floor((i+1)*total/(ev.length+1)));(at[d]=at[d]||[]).push(e)});
-  const from=cityName(S.city);
-  const l=$('#layer');
-  const drawTrip=()=>{l.innerHTML=`<div class="overlay"><div class="sheet"><h2>${esc(from)} → ${esc(cityName(to))}</h2>
-    <p id="tripday" class="num"></p><div class="track"><div class="camels" id="cm">${camelSvg()+camelSvg()+camelSvg()}</div></div>
-    <div class="journal" id="jr"></div></div></div>`};
-  const journal=[];
-  let d=0;
-  const upd=()=>{const td=$('#tripday'),cm=$('#cm'),jr=$('#jr');if(!td)return;
-    td.textContent=`День пути ${d} из ${total}`;cm.style.left=`calc(${Math.min(100,d/total*100)}% - ${d/total*69}px)`;
-    jr.innerHTML=journal.slice(-4).map(j=>`<div>${j}</div>`).join('')};
-  drawTrip();upd();
-  for(d=1;d<=total;d++){
-    S.day++;await sleep(420);upd();
-    for(const e of (at[d]||[])){
-      const res=await handleEvent(e,r.danger);
-      if(res==='storm'){total++;journal.push('Песчаная буря задержала караван')}
-      else if(res)journal.push(res);
-      drawTrip();upd();
-    }
-  }
-  if(!journal.length)journal.push('Дорога прошла спокойно');
-  upd();await sleep(450);
-  S.city=to;S.prices=isEmptyOasis(to)?null:genPrices(to);accrue();
-  l.innerHTML='';
-  if(CITIES[to].strict&&S.wanted>=3){
-    const fine=S.wanted*60;
-    if(S.gold>=fine){S.gold-=fine;S.wanted=Math.max(0,S.wanted-2);
-      await ask('Стража у ворот',`Вас узнали. Штраф ${fine} золотых, розыск снижен.`,[{t:'Заплатить',v:1}])}
-    else{S.cargo={};S.wanted=Math.max(0,S.wanted-1);
-      await ask('Стража у ворот','Вас узнали, а платить нечем. Весь груз конфискован.',[{t:'Горько…',v:1}])}
-  }
-  let extra='';if(isOwn(to)&&S.own.treasury>0)extra=` В казне города ${fmt(S.own.treasury)} золотых.`;
-  await ask(esc(cityName(to)),`Караван прибыл. ${journal.join('. ')}.${extra}`,[{t:isEmptyOasis(to)?'Осмотреть оазис':isOwn(to)?'В мой город':'На базар',v:1}]);
-  busy=false;tab=isOwn(to)?'town':'market';save();render();checkWin();
-}
-async function handleEvent(e,danger){
-  if(e==='storm'){
-    const big=GOODS.map(g=>[g.id,S.cargo[g.id]||0]).sort((a,b)=>b[1]-a[1])[0];
-    const lost=Math.ceil(big[1]*.1);if(lost)S.cargo[big[0]]-=lost;
-    await ask('Песчаная буря','Караван переждал бурю, путь стал на день длиннее.'+(lost?` Пропало: ${lost} × ${G(big[0]).n}.`:''),[{t:'Идти дальше',v:1}]);
-    return 'storm';
-  }
-  if(e==='bandits'){
-    const B=Math.max(1,Math.round((1.5+S.day*.08)*danger*4*rnd(.6,1.4)));
-    const pay=Math.round(Math.max(20,S.gold*.25));
-    const v=await ask('Бандиты!',`Из-за барханов выехали разбойники. Их сила: ${B}. Сила вашего каравана: ${power().toFixed(1)}.`,
-      [{t:'Сражаться',v:'fight'},{t:`Откупиться · ${pay}`,v:'pay',cls:'ghost',off:S.gold<pay}].concat(adsReady()?[{t:'▶ Реклама: уйти без потерь',v:'ad',cls:'ghost'}]:[]));
-    if(v==='pay'){S.gold-=pay;return `Откупились от бандитов за ${pay}`}
-    if(v==='ad'){if(await showAd())return 'Проводник увёл караван тайной тропой, бандиты остались ни с чем';toast('Реклама не загрузилась — придётся драться')}
-    const win=await battle(power(),B,'Бандиты');
-    if(win){const loot=B*25+ri(0,40);S.gold+=loot;let lost=0;if(S.guards&&Math.random()<.3){S.guards--;lost=1}
-      return `Разбили бандитов, добыча ${loot}`+(lost?', погиб 1 наёмник':'')}
-    GOODS.forEach(g=>{if(S.cargo[g.id])S.cargo[g.id]=Math.floor(S.cargo[g.id]/2)});
-    const gl=Math.ceil(S.guards*.3);S.guards-=gl;const gg=Math.round(S.gold*.2);S.gold-=gg;
-    return `Бандиты отобрали половину груза и ${gg} золотых`+(gl?`, погибло наёмников: ${gl}`:'');
-  }
-  if(e==='caravan'){
-    const C=1+ri(0,Math.floor(2+S.day/15));
-    const v=await ask('Встречный караван',`Купеческий караван идёт навстречу. Его охрана: ${C}. Ваша сила: ${power().toFixed(1)}. Напасть — значит стать разыскиваемым.`,
-      [{t:'Пройти мимо',v:'pass',cls:'ghost'},{t:'Напасть',v:'attack'}]);
-    if(v==='pass')return null;
-    S.wanted=Math.min(5,S.wanted+1);S.robbed++;
-    const win=await battle(power(),C,'Охрана каравана');
-    if(win){const g=GOODS[ri(0,GOODS.length-2)],q=Math.min(Math.floor((cap()-load())/g.s),ri(3,10)),gold=C*30+ri(0,50);
-      S.gold+=gold;if(q>0)S.cargo[g.id]=(S.cargo[g.id]||0)+q;
-      return `Ограбили караван: ${gold} золотых`+(q>0?` и ${q} × ${g.n}`:'')}
-    const gl=Math.ceil(S.guards*.4);S.guards-=gl;const gg=Math.round(S.gold*.1);S.gold-=gg;
-    return `Нападение отбили, потеряли ${gg} золотых`+(gl?` и ${gl} наёмников`:'');
-  }
-}
-async function battle(P,B,foe){
-  const win=Math.random()<Math.pow(P,1.3)/(Math.pow(P,1.3)+Math.pow(B,1.3));
-  const l=$('#layer');
-  l.innerHTML=`<div class="overlay"><div class="sheet"><h2>Бой</h2>
-   <div class="vs"><div class="you"><b class="num">${P.toFixed(1)}</b><div>Ваш караван</div></div><div>против</div><div class="foe"><b class="num">${B}</b><div>${foe}</div></div></div>
-   <div class="bar"><i id="hp1" style="width:100%"></i></div><div class="bar foe"><i id="hp2" style="width:100%"></i></div>
-   <div class="journal" id="bl"></div><div id="res"></div></div></div>`;
-  let a=100,b=100;const lines=['Звенят сабли','Летят стрелы','Верблюды ревут','Пыль закрыла солнце','Последний натиск'];
-  for(let i=0;i<5;i++){await sleep(520);
-    const hitA=rnd(8,22)*(win?.7:1.3), hitB=rnd(8,22)*(win?1.3:.7);
-    a=Math.max(win?15:0,a-hitA);b=Math.max(win?0:15,b-hitB);if(i===4){if(win)b=0;else a=0}
-    $('#hp1').style.width=a+'%';$('#hp2').style.width=b+'%';
-    $('#bl').innerHTML+=`<div>${lines[i]}</div>`}
-  await sleep(300);
-  $('#res').innerHTML=`<div class="result ${win?'win':'lose'}">${win?'Победа!':'Поражение'}</div>`;
-  await sleep(900);
-  return win;
-}
-async function checkWin(){
-  if(!S.won&&worth()>=GOAL){S.won=true;save();
-    await ask('Великий купец!',`На ${S.day}-й день ваше состояние достигло ${fmt(worth())} золотых. Вас знают от Багдада до Чанъаня. Можно продолжать.`,[{t:'Продолжить',v:1}]);render()}
-}
-
 /* ---------- wiring ---------- */
-$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t||busy)return;tab=t.dataset.tab;render()});
-$('#view').addEventListener('click',e=>{
-  const dot=e.target.closest('.city-dot');
-  if(dot&&dot.dataset.to){act('travel',dot);return}
-  const b=e.target.closest('[data-act]');if(b&&!b.disabled)act(b.dataset.act,b)});
-
+document.addEventListener('click',e=>{
+  const t=e.target.closest('#tabs .tab');if(t){if(!busy){tab=t.dataset.tab;render()}return}
+  const dot=e.target.closest('.city-dot');if(dot&&dot.dataset.to){if(!busy)act('travel',dot);return}
+  const b=e.target.closest('[data-act]');if(b&&!b.disabled&&!b.closest('#layer'))act(b.dataset.act,b)});
+setInterval(()=>{if(S){tickJobs();updCountdowns()}},1000);
 initAds();
 const saved=restore();
-if(saved){S=saved;render()}
+if(saved){S=saved;render();if(S.trip)runTrip();else checkAch()}
 else{newGame();render();
-  ask('Караван','Вы — бедный торговец из Хивы: 2 верблюда, 1 наёмник и 300 золотых. Дорога ведёт от Багдада до Чанъаня. Покупайте дёшево, продавайте дорого, нанимайте охрану, а разбогатев — основайте свой город в оазисе. Цель — 10 000 золотых.',[{t:'В путь!',v:1}])}
+  ask('Караван','Вы — бедный торговец из Хивы: 200 золотых, 1 наёмник и пара верблюдов. Дорога от Багдада до Чанъаня идёт в реальном времени: минута на каждый день пути. Торгуйте, прокачивайте караван, копите лазурит и собирайте достижения. Конца у пути нет.',[{t:'В путь!',v:1}])}
 </script>
 <script>
 try{const t=window.Telegram&&Telegram.WebApp;if(t){t.ready();t.expand();t.setHeaderColor&&t.setHeaderColor('#0a1430');t.setBackgroundColor&&t.setBackgroundColor('#0a1430')}}catch(e){}
